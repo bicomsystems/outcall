@@ -1,0 +1,9 @@
+; OutlookAddin.def : Declares the module parameters for the DLL.
+
+LIBRARY      "OutlookAddin"
+DESCRIPTION  'OutlookAddin Windows Dynamic Link Library'
+
+EXPORTS
+    ExchEntryPoint				@1
+    DllRegisterServer			@2	PRIVATE
+    DllUnregisterServer			@3	PRIVATE

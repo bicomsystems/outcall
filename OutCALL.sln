@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OutCALL", "PBXClient.vcproj", "{1497543C-6D5D-4A08-9DE5-DC03940839CF}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug - Free = Debug - Free
+		denis = denis
+		Free - Debug = Free - Debug
+		Release = Release
+		Release - Free = Release - Free
+		Test = Test
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug.ActiveCfg = Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug.Build.0 = Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug - Free.ActiveCfg = Debug - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug - Free.Build.0 = Debug - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.denis.ActiveCfg = denis|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.denis.Build.0 = denis|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Free - Debug.ActiveCfg = Free - Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Free - Debug.Build.0 = Free - Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release.ActiveCfg = Release|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release.Build.0 = Release|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release - Free.ActiveCfg = Release - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release - Free.Build.0 = Release - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Test.ActiveCfg = Test|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Test.Build.0 = Test|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

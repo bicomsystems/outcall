@@ -1,0 +1,893 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Croatian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_HRV)
+#ifdef _WIN32
+LANGUAGE LANG_CROATIAN, SUBLANG_DEFAULT
+#pragma code_page(1250)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\PBXClient.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON_DISCONNECTED   ICON                    "res\\disconnected.ico"
+IDI_ICON_CONNECTED      ICON                    "res\\connected.ico"
+IDI_ICON_CONNECTING1    ICON                    "res\\connecting1.ico"
+IDI_ICON_CONNECTING2    ICON                    "res\\connecting2.ico"
+IDI_ICON_RED            ICON                    "res\\icon2.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_POPUP               BITMAP                  "res\\bitmap2.bmp"
+#endif    // Croatian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\PBXClient.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDB_BITMAP_OUTCALL      BITMAP                  "res\\bmp00001.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "Help"
+        BEGIN
+            MENUITEM "Online HTML",                 ID_FILE_ONLINEHTML
+            MENUITEM "Online PDF",                  32801
+            MENUITEM SEPARATOR
+            MENUITEM "Contact Support",             ID_HELP_CONTACTSUPPORT
+        END
+        MENUITEM "About",                       ID_FILE_ABOUT
+        MENUITEM SEPARATOR
+        MENUITEM "Settings",                    ID_FILE_SETTINGS
+        MENUITEM "Asterisk Debug Info",         ID_FILE_ASTERISKDEBUGINFO
+        MENUITEM SEPARATOR
+        MENUITEM "Place a Call",                ID_FILE_CALL
+        MENUITEM "Active Calls",                ID_FILE_ACTIVECALLS
+        MENUITEM "Call History",                ID_FILE_MISSEDCALLS
+        POPUP "Import Contacts"
+        BEGIN
+            MENUITEM "From Outlook",                ID_REFRESHCONTACTS_IMPORTFROMOUTLOOK
+
+            MENUITEM "From CSV file",               ID_REFRESHCONTACTS_IMPORTFROMCSVFILE
+
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Sign In",                     ID_FILE_CONNECT
+        MENUITEM "Add Contact",                 ID_FILE_ADDCONTACT
+        MENUITEM "Find",                        ID_FILE_FIND
+        MENUITEM SEPARATOR
+        MENUITEM "Exit",                        ID_APP_EXIT
+    END
+    POPUP "Popup"
+    BEGIN
+        POPUP "Import Contacts"
+        BEGIN
+            MENUITEM "From Outlook",                ID_IMPORTCONTACTS_FROMOUTLOOK
+
+            MENUITEM "From CSV file",               ID_IMPORTCONTACTS_FROMCSVFILE
+
+        END
+        POPUP "Display"
+        BEGIN
+            MENUITEM "First Name, Last Name",       ID_DISPLAY_FIRSTNAME
+            MENUITEM "Last Name, First Name",       ID_DISPLAY_LASTNAME
+        END
+        MENUITEM "&Hide contacts with no telephone numbers", 
+                                                ID_POPUP_HIDECONTACTSWITHNOTELEPHONENUMBERS
+
+    END
+    POPUP "Find Popup"
+    BEGIN
+        MENUITEM "By Name",                     ID_FINDPOPUP_BYNAME
+        MENUITEM "By Surname",                  ID_FINDPOPUP_BASURNAME
+        MENUITEM "By Company",                  ID_FINDPOPUP_BYCOMPANY
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Bicom Systems"
+            VALUE "FileDescription", "Asterisk Outlook integration"
+            VALUE "FileVersion", "1.40"
+            VALUE "InternalName", "OutCALL"
+            VALUE "OriginalFilename", "OutCALL.EXE"
+            VALUE "ProductName", "OutCALL"
+            VALUE "ProductVersion", "1.40"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_ADD_LANGUAGE DIALOGEX 0, 0, 212, 222
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Add Language"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Add language",IDOK,7,201,96,14
+    PUSHBUTTON      "Cancel",IDCANCEL,109,201,96,14
+    LTEXT           "Select language:",IDC_STATIC_SELECT_LANGUAGE,7,7,192,8
+    LISTBOX         IDC_LIST_LANGUAGES,7,17,198,176,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALINGRULESSETTINGSDLG DIALOG  0, 0, 186, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,16
+    PUSHBUTTON      "Cancel",IDCANCEL,129,26,50,16
+END
+
+IDD_DIALOG_MAP_CONTACT_FIELDS DIALOGEX 0, 0, 387, 266
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Map custom fields"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,31,242,157,17
+    PUSHBUTTON      "Cancel",IDCANCEL,199,242,165,17
+    CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | 
+                    WS_TABSTOP,7,17,180,183
+    CONTROL         "",IDC_LIST_OUTLOOK_FIELDS,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | 
+                    WS_TABSTOP,200,17,180,183
+    LTEXT           "Mapped fields:",IDC_STATIC_OUTCALL_FIELDS,7,7,181,8
+    LTEXT           "Outlook fields:",IDC_STATIC_OUTLOOK_FIELDS,200,7,180,8
+    PUSHBUTTON      "Map selected fields",IDC_BUTTON_MAP_FIELDS,90,209,202,
+                    17
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,234,373,1
+END
+
+IDD_DIALOG_OUTLOOK_RULE DIALOGEX 0, 0, 156, 94
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Outlook Rule"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,45,73,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,99,73,50,14
+    LTEXT           "Prefix:",IDC_STATIC_PREFIX,7,7,22,8
+    EDITTEXT        IDC_EDIT_PREFIX,7,17,142,14,ES_AUTOHSCROLL
+    LTEXT           "Replace with:",IDC_STATIC_REPLACEMENT,7,38,44,8
+    EDITTEXT        IDC_EDIT_REPLACEMENT,7,49,141,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOG_ADD_LANGUAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 205
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 215
+    END
+
+    IDD_DIALINGRULESSETTINGSDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_DIALOG_MAP_CONTACT_FIELDS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 380
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 259
+    END
+
+    IDD_DIALOG_OUTLOOK_RULE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDR_MAINFRAME           "PBXClient"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "OutCALL"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral (Sys. Default) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUSD)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SETTINGS DIALOGEX 0, 0, 365, 346
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "OutCALL Settings"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "&OK",IDOK,136,326,70,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,212,326,70,14
+    PUSHBUTTON      "Appl&y",IDAPPLY,288,326,70,14
+    LTEXT           "Powered by: ",IDC_STATIC_POWERED_BY,7,323,111,8
+    LTEXT           "Bicom Systems Ltd.",IDC_STATIC_LINK_BS,7,332,116,8,
+                    SS_NOTIFY
+    CONTROL         "",IDC_TAB,"SysTabControl32",0x0,7,7,351,310
+END
+
+IDD_OUTLOOKCONTACTS_DIALOG DIALOGEX 0, 0, 229, 266
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "OutCALL - Dial"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "D&ial from:",IDC_STATIC_DIAL_FROM,7,9,172,8
+    COMBOBOX        IDC_COMBO_DIAL_FROM,7,20,214,30,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Contact:",IDC_STATIC_CONTACT,7,45,167,8
+    COMBOBOX        1010,7,57,214,30,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Options",IDC_BUTTON_OPTIONS,94,76,79,14
+    LTEXT           "&Phone:",IDC_STATIC_PHONE,7,96,165,8
+    EDITTEXT        IDC_EDIT_NUMBER,7,107,214,12,ES_AUTOHSCROLL
+    LTEXT           "Phone &numbers:",IDC_STATIC_PHONE_NUMBERS,7,129,170,8
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
+                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | 
+                    WS_TABSTOP,7,141,214,90
+    PUSHBUTTON      "&Find",IDC_BUTTON_FIND,7,76,79,14
+    PUSHBUTTON      "&Skip",IDC_BUTTON_SKIP,7,246,65,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Dial",IDOK,81,246,65,14
+    PUSHBUTTON      "E&xit",IDCANCEL,156,246,65,14
+    CONTROL         "",IDC_STATIC_SEPARATOR,"Static",SS_ETCHEDHORZ,7,39,214,
+                    1
+    CONTROL         "",IDC_STATIC_SEPARATOR2,"Static",SS_ETCHEDHORZ,7,239,
+                    213,1
+END
+
+IDD_DIALOG_DEBUG DIALOGEX 0, 0, 433, 374
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Asterisk Debug Info"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "E&xit",IDOK,331,353,95,14
+    PUSHBUTTON      "&Clear",IDC_BUTTON_CLEAR,226,353,95,14
+    LTEXT           "Debug info:",IDC_STATIC_DEBUG_INFO,7,7,355,8
+    EDITTEXT        IDC_EDIT_DEBUG_INFO,7,18,419,328,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
+                    ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_DIALOG_ADD_EXTENSION DIALOGEX 0, 0, 180, 154
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Add extension"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "&Extension:",IDC_STATIC_EXTENSION,7,8,153,8
+    EDITTEXT        IDC_EDIT_EXTENSION,7,19,166,12,ES_AUTOHSCROLL
+    LTEXT           "&Protocol:",IDC_STATIC_PROTOCOL,7,38,157,8
+    COMBOBOX        IDC_COMBO_PROTOCOL,7,49,166,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Pass&word:",IDC_STATIC_PASSWORD,7,68,158,8
+    EDITTEXT        IDC_EDIT_PASSWORD,7,80,166,12,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    LTEXT           "&Re-type password:",IDC_STATIC_PASSWORD2,7,100,166,9
+    EDITTEXT        IDC_EDIT_PASSWORD2,7,112,166,12,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,41,133,62,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,111,133,62,14
+END
+
+IDD_DIALOG_MISSED_CALLS DIALOGEX 0, 0, 418, 327
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "OutCALL - Call History"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Filter",IDC_STATIC_FILTER,7,7,404,52
+    LTEXT           "&Show:",IDC_STATIC_SHOW,16,22,100,8
+    COMBOBOX        IDC_COMBO_SHOW,16,33,100,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Phone:",IDC_STATIC_PHONE,125,22,102,8
+    COMBOBOX        IDC_COMBO_PHONE,125,33,100,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Date:",IDC_STATIC_DATE,236,22,100,8
+    COMBOBOX        IDC_COMBO_DATE,236,33,100,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Missed Calls",IDC_STATIC_FRAME,7,67,404,231
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
+                    WS_BORDER | WS_TABSTOP,16,82,385,187
+    PUSHBUTTON      "Ca&ll",IDC_BUTTON_CALL,16,275,125,14,WS_DISABLED
+    PUSHBUTTON      "&Add Outlook Contact",IDC_BUTTON_ADD_CONTACT,276,275,
+                    125,14,WS_DISABLED
+    PUSHBUTTON      "&Remove selection",IDC_BUTTON_REMOVE,146,275,125,14,
+                    WS_DISABLED
+    DEFPUSHBUTTON   "&Close",IDOK,103,305,216,15
+END
+
+IDD_DIALOG_LOADING_CONTACTS DIALOGEX 0, 0, 186, 78
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_BORDER | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CTEXT           "Loading Outlook contacts. This may take some time. Please wait...",
+                    IDC_STATIC_PLEASE_WAIT,7,20,172,27
+    PUSHBUTTON      "Cancel",IDCANCEL,64,51,60,14
+END
+
+IDD_DIALOG_FIND_CONTACT DIALOGEX 0, 0, 224, 236
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Find"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "D&ial from:",IDC_STATIC_DIAL_FROM,7,9,154,8
+    COMBOBOX        IDC_COMBO1,7,20,210,30,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Search:",IDC_STATIC_SEARCH,7,39,163,8
+    EDITTEXT        IDC_EDIT_SEARCH,7,50,210,12,ES_AUTOHSCROLL
+    LTEXT           "Phone &numbers:",IDC_STATIC_PHONE_NUMBERS,7,102,170,8
+    CONTROL         "",IDC_LIST_RESULTS,"SysListView32",LVS_REPORT | 
+                    LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,114,210,92
+    DEFPUSHBUTTON   "&Dial",IDC_BUTTON_DIAL,51,215,80,14
+    PUSHBUTTON      "&Close",IDCANCEL,137,215,80,14
+    LTEXT           "&Phone:",IDC_STATIC_PHONE,7,70,210,8
+    EDITTEXT        IDC_EDIT_PHONE_NUMBER,7,81,210,12,ES_AUTOHSCROLL
+END
+
+IDD_DIALOG_ACTIVE_CALLS DIALOGEX 0, 0, 217, 126
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Active Calls"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Close",IDOK,140,105,70,14
+    PUSHBUTTON      "&Hangup",IDC_BUTTON_HANGUP,63,105,70,14
+    CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | 
+                    WS_TABSTOP,7,18,203,81
+    PUSHBUTTON      "Cancel",IDCANCEL,7,105,50,14,NOT WS_VISIBLE
+    LTEXT           "Active Calls:",IDC_STATIC_ACTIVE_CALLS,7,7,193,8
+END
+
+IDD_DIALOG_SETTINGS_SERVER DIALOGEX 0, 0, 346, 294
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Server settings",IDC_STATIC_GROUP,7,7,332,280
+    LTEXT           "Ser&ver:",IDC_STATIC_SERVER,19,23,210,8
+    EDITTEXT        IDC_EDIT_SERVER,19,34,304,12,ES_AUTOHSCROLL
+    LTEXT           "&Username:",IDC_STATIC_USERNAME,19,55,198,8
+    EDITTEXT        IDC_EDIT_USERNAME,19,66,304,12,ES_AUTOHSCROLL
+    LTEXT           "Pass&word:",IDC_STATIC_PASSWORD,19,88,208,8
+    EDITTEXT        IDC_EDIT_PASSWORD,19,99,304,12,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    LTEXT           "&Port:",IDC_STATIC_PORT,19,120,206,8
+    EDITTEXT        IDC_EDIT_PORT,18,131,304,12,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+IDD_DIALOG_SETTINGS_OUTLOOK DIALOGEX 0, 0, 346, 294
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Outlook settings",IDC_STATIC_OUTLOOK_SETTINGS,7,7,332,
+                    280
+    CONTROL         "Enable Outloo&k integration",IDC_CHECK_O_INTEGRATION,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,19,
+                    21,306,18
+    CONTROL         "Enable Outlook &features",IDC_CHECK_ENABLE_O_FEATURES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,43,300,10
+    CONTROL         "Search Outlook Contacts for incoming calls",
+                    IDC_CHECK_SEARCH_O_CONTACTS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,19,61,307,10
+    CONTROL         "Automatically display &New Contact Window for unknown incoming calls",
+                    IDC_CHECK_NEW_CONTACT_WINDOW,"Button",BS_AUTOCHECKBOX | 
+                    BS_MULTILINE | WS_TABSTOP,19,76,305,17
+    CONTROL         "R&efresh contacts interval (in minutes):",
+                    IDC_CHECK_REFRESH_CONTACTS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,19,99,307,10
+    EDITTEXT        IDC_EDIT_REFRESH_INTERVAL,31,113,33,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Di&splay New Contact Window for non-numeric CallerID",
+                    IDC_CHECK_NN_CALLERID,"Button",BS_AUTOCHECKBOX | 
+                    BS_MULTILINE | WS_TABSTOP,19,130,307,19
+    CONTROL         "Do not display contacts with no telephone num&bers defined",
+                    IDC_CHECK_FILTER_CONTACTS,"Button",BS_AUTOCHECKBOX | 
+                    BS_MULTILINE | WS_TABSTOP,19,149,310,18
+    GROUPBOX        "Contact details",IDC_STATIC_CONTACT_DETAILS,20,171,306,
+                    50
+    CONTROL         "Fi&rst Name Middle Name, Last Name",IDC_RADIO_FIRSTLAST,
+                    "Button",BS_AUTORADIOBUTTON | BS_MULTILINE,28,185,288,13
+    CONTROL         "&Last Name, First name Middle Name",IDC_RADIO_LASTFIRST,
+                    "Button",BS_AUTORADIOBUTTON | BS_MULTILINE,28,199,287,18
+    GROUPBOX        "Mail Profile",IDC_STATIC_MAIL_PROFILE,20,227,305,50
+    LTEXT           "Choose Mail Profile:",IDC_STATIC_CHOOSE_MAIL_PROFILE,30,
+                    241,289,8
+    COMBOBOX        IDC_COMBO_MAIL_PROFILE,30,254,125,30,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALOG_SETTINGS_EXTENSIONS DIALOGEX 0, 0, 346, 294
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Extensions",IDC_STATIC_GROUP,7,7,332,280
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
+                    WS_BORDER | WS_TABSTOP,19,23,220,252
+    PUSHBUTTON      "&Add",IDC_BUTTON_ADD,248,23,80,14
+    PUSHBUTTON      "&Remove",IDC_BUTTON_REMOVE,247,43,80,14,WS_DISABLED
+    PUSHBUTTON      "&Edit",IDC_BUTTON_EDIT,247,64,80,14,WS_DISABLED
+END
+
+IDD_DIALOG_SETTINGS_GENERAL DIALOGEX 0, 0, 346, 294
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "General settings",IDC_STATIC_GROUP,7,7,332,280
+    LTEXT           "Call notification dialog &delay (sec):",
+                    IDC_STATIC_POPUP_DELAY,19,23,301,8
+    EDITTEXT        IDC_EDIT_DELAY_TIME,19,34,143,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Start OutCALL at Windows startup",
+                    IDC_CHECK_AUTOMATIC_START,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,57,303,10
+    CONTROL         "Allow automatic Sign In when connected to the &Internet",
+                    IDC_CHECK_AUTOMATIC_CONNECT,"Button",BS_AUTOCHECKBOX | 
+                    BS_MULTILINE | WS_TABSTOP,20,70,309,24
+    CONTROL         "Minimum CallerID length for which to display popup notification:",
+                    IDC_CHECK_IGNORE_CALLS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,97,301,10
+    COMBOBOX        IDC_COMBO_MIN_DIGITS,32,110,48,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Don't s&how this window at startup",
+                    IDC_CHECK_SHOW_AT_STARTUP,"Button",BS_AUTOCHECKBOX | 
+                    BS_MULTILINE | WS_TABSTOP,19,268,299,12
+    GROUPBOX        "Language",IDC_STATIC_FRAME_LANGUAGE,19,135,306,51
+    LTEXT           "Language:",IDC_STATIC_LANGUAGE,30,150,114,8
+    COMBOBOX        IDC_COMBO_LANGUAGE,29,161,136,30,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add another language",IDC_BUTTON_ADD_LANGUAGE,174,161,
+                    139,13
+END
+
+IDD_DIALOG_SETTINGS_DIALING_RULES DIALOGEX 0, 0, 346, 294
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Dialing rules",IDC_STATIC_GROUP,7,7,332,280
+    LTEXT           "Outgoing context",IDC_STATIC_OUT_CONTEXT,19,23,296,8
+    EDITTEXT        IDC_EDIT_OUTGOING_CONTEXT,19,34,310,12,ES_AUTOHSCROLL
+    LTEXT           "Outgoing calls prefix :",IDC_STATIC_OUTGOING_PREFIX,19,
+                    54,305,8
+    EDITTEXT        IDC_EDIT_OUTGOING_PREFIX,19,66,310,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Strip incoming digits (comma separated for multiple prefixes):",
+                    IDC_STATIC_STRIP,20,86,303,8
+    EDITTEXT        IDC_EDIT_STRIP_OPTIONS,19,97,310,12,ES_AUTOHSCROLL
+END
+
+IDD_DIALOG_SETTINGS_IMPORT_RULES DIALOGEX 0, 0, 346, 294
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Outlook Import rules",IDC_STATIC_GROUP,7,7,332,280
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
+                    WS_BORDER | WS_TABSTOP,19,48,200,228
+    PUSHBUTTON      "&Add",IDC_BUTTON_ADD,228,48,100,14
+    PUSHBUTTON      "&Remove",IDC_BUTTON_REMOVE,228,68,99,14,WS_DISABLED
+    PUSHBUTTON      "&Edit",IDC_BUTTON_EDIT,228,89,99,14,WS_DISABLED
+    PUSHBUTTON      "Update Database",IDC_BUTTON_UPDATE_DATABASE,228,110,99,
+                    14
+    LTEXT           "NOTE: The following rules apply for Outlook Contacts' phone numbers, and for outgoing calls.",
+                    IDC_STATIC_DESCRIPTION,19,23,309,21
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOG_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 358
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 340
+    END
+
+    IDD_OUTLOOKCONTACTS_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 221
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 260
+    END
+
+    IDD_DIALOG_DEBUG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 426
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 367
+    END
+
+    IDD_DIALOG_ADD_EXTENSION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 173
+        TOPMARGIN, 9
+        BOTTOMMARGIN, 147
+    END
+
+    IDD_DIALOG_MISSED_CALLS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 411
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 320
+    END
+
+    IDD_DIALOG_LOADING_CONTACTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_DIALOG_FIND_CONTACT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 217
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 229
+    END
+
+    IDD_DIALOG_ACTIVE_CALLS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 210
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 119
+    END
+
+    IDD_DIALOG_SETTINGS_SERVER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 339
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_DIALOG_SETTINGS_OUTLOOK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 339
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_DIALOG_SETTINGS_EXTENSIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 339
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_DIALOG_SETTINGS_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 339
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_DIALOG_SETTINGS_DIALING_RULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 339
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_DIALOG_SETTINGS_IMPORT_RULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 339
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Neutral (Sys. Default) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\PBXClient.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

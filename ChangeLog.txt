@@ -1,0 +1,78 @@
+Changelog:
+Version 1.45 (2008-06-13)
+
+- Added support for UNICODE. It is possible to compile OutCALL in Visual Studio with or without UNICODE support with the same codebase.
+- OutCALL now uses Extended MAPI to load contacts from Outlook. It is now much faster and reliable.
+- Added Outlook Import Rules (Settings->Outlook Import Rules). Theese rules apply for phone numbers loaded from Outlook as well as for outgoing calls placed from OutCALL.
+- Added support for calls coming from Queue, showing the Queue number and CallerID.
+- It is now possible to call from Outlook even if the selected contact is not in OutCALL's database.
+- Added Bosnian, Spanish and Slovak translation.
+- Added logging useful for debugging purposes ($APPLICATION_DATA\OutCALL\outcall.log).
+- Added option to cancel process of loading Outlook Contacts.
+- When invalid values are specified in Settings dialog for Server/Username/Port, user is automatically moved to the Server tab and the appropriate field is focused.
+- Added "GNU gettext" dependencies to the Source Code package.
+
+BUG fixes:
+- Fixed critical bug when user is logged on as a domain user.
+- Fixed memory leaks in MAPIEx interface.
+- Fixed bug with memory leak in Call dialog.
+- Fixed bug with Outlook plugin integration on a fresh Windows install.
+- Fixed bug with Dial Window focus.
+- Fixed problems with Outlook integration when running OutCALL as a normal user (both Windows XP and Vista).
+- Some strings in user interface could not be translated. Fixed.
+- "Incoming strip digits" option is fixed so that the largest prefix will be matched first.
+- Fixed bug when Importing Contacts from CSV file.
+- Added C/C++ runtime dependencies into setup.
+- OutCALL stripes out "-" from the phone number before dialing out.
+- In "auth" version of OutCALL it was possible to place calls from extensions for which user was not authorized in OutCALL. Fixed.
+- Fixed GUI control alignment in Settings dialog.
+- Reorganized some internal staff in the code.
+
+
+version 1.40 (11.06.2007)
+
+- Multi-language support
+
+- Skinny support
+
+- It is possible to define prefix for outgoing calls (Settings->General)
+
+- It is possible to define one or more prefixes which OutCALL should delete from the incoming call's callerid (Settings->General)
+
+- In Settings dialog, after you Apply changes, OutCall automatically reconnects using new Server details (if those are changed)
+
+BUG fixes:
+
+- Settings and other dialogs cannot be opened twice
+
+- Settings and other dialogs can now be accessed from the taskbar
+
+- Added all DLL dependencies into the setup
+
+
+Version 1.35 (18.04.2007):
+
+- Added support for Asterisk 1.0 (notification popup for incoming calls didn't display)
+
+- Settings dialog by default will not show at startup if OutCALL is configured
+
+- Detection if Outlook is installed
+
+- No more duplicated Outlook contacts in the Dial window
+
+- Add/Edit extensions is possible only if user is Logged In (this way we ensure that a valid username/secret is entered for extensions)
+
+- In Settings->Extensions it's possible to see if an extension is authorized or not
+
+- Enable/Disable of Outlook integration can be done only when user is Logged In as Administrator due to the security restrictions in Microsoft.
+
+- OutCALL has been successfully tested with Outlook 2007.
+
+
+BUG fixes:
+
+- Networking problems when VPN is enabled
+
+- OutCALL can now be used by all Windows users (not just the Admin account). Each user settings are saved separately.
+
+- Setup wizard will not kill Outlook process if it is running. It will just tell user that it must be closed in order to proceed. The same applies to the Uninstall Wizard.

@@ -1,0 +1,7 @@
+server=host_ip
+port=5038
+manager_username=username
+manager_password=password
+extension=sip|||username|||secret
+extension=iax|||username|||secret
+
