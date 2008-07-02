@@ -25,10 +25,12 @@
 
 #define RELEASE(s) if(s!=NULL) { s->Release();s=NULL; }
 
-#define MAPI_NO_CACHE ((ULONG)0x00000200)
+#define MAPI_NO_CACHE ((ULONG) 0x00000200)
 
 #include <vector>
 #include "MAPIContact.h"
+
+class CppSQLite3DB;
 
 class CMAPIEx
 {
@@ -52,6 +54,8 @@ protected:
 public:
 	void StopLoadingContacts();
 	void LoadOutlookContacts();
+	HRESULT LoadExchangeContacts(CppSQLite3DB *db);
+
 	IMAPISession* GetSession() { return m_pSession; }
 	static LPCTSTR GetValidString(SPropValue& prop);
 

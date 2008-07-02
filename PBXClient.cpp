@@ -820,7 +820,7 @@ void CAboutDlg::InitLocaleGUI() {
 	if (sBuild.GetLength()<2)
 		sBuild = "0" + sBuild;
 		
-	m_version.SetWindowText(CString(APP_NAME) + ", " + _("Version") + " 1." + sBuild);	
+	m_version.SetWindowText(CString(APP_NAME) + ", " + _("Version") + " 1." + sBuild);
 }
 
 

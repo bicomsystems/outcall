@@ -143,7 +143,7 @@
 
 #define POPUP_BITMAP_ID		IDB_POPUP
 
-#define OUTCALL_VERSION		50
+#define OUTCALL_VERSION		55
 
 #define REG_KEY_APP			_T("BicomSystems")
 #define APP_REG_KEY			_T("Software\\BicomSystems\\OutCALL")

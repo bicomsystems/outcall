@@ -1,32 +1,33 @@
-Changelog:
-Version 1.45 (2008-06-13)
+Version 1.45
 
-- Added support for UNICODE. It is possible to compile OutCALL in Visual Studio with or without UNICODE support with the same codebase.
-- OutCALL now uses Extended MAPI to load contacts from Outlook. It is now much faster and reliable.
-- Added Outlook Import Rules (Settings->Outlook Import Rules). Theese rules apply for phone numbers loaded from Outlook as well as for outgoing calls placed from OutCALL.
-- Added support for calls coming from Queue, showing the Queue number and CallerID.
-- It is now possible to call from Outlook even if the selected contact is not in OutCALL's database.
-- Added Bosnian, Spanish and Slovak translation.
-- Added logging useful for debugging purposes ($APPLICATION_DATA\OutCALL\outcall.log).
-- Added option to cancel process of loading Outlook Contacts.
-- When invalid values are specified in Settings dialog for Server/Username/Port, user is automatically moved to the Server tab and the appropriate field is focused.
-- Added "GNU gettext" dependencies to the Source Code package.
+Added UNICODE support. It is possible to compile OutCALL with or without UNICODE support with the same codebase.
+Added Bosnian, Spanish and Slovak translation.
+Added Outlook Import Rules.
+Import rules now apply for outgoing calls as well.
+Incoming strip digits option is fixed so that the largest prefixes will match first.
+Translation of Outlook Import Rules tab and added a small description for users.
+Reorganized some internal staff in the code.
+Added option to cancel process of loading outlook contacts.
+When invalid values are specified in settings dialog for Server/Username/Port, user is automatically moved to the Server tab and the appropriate field is focused.
+Fixed GUI alignment in Settings dialog.
+Added support for calls coming from Queue, showing the Queue and CallerID.
+OutCall.log file is moved to APP_DATA\OutCALL folder because of the permission problems when running as normal user.
+Added both C/C++ runtime dependencies into setup
+It's possible to call from Outlook even if the selected contact is not in OutCALL's database.
+OutCALL stripes out "-" from the phone number before dialing out
+Critical bug when user is logged in windows as a domain user
+import from csv fixed
+Added "GNU gettext" dependencies to the Source Code package
+Changed the way OutCALL loads contacts from Outlook (using MAPI32 interface). It is now much faster and reliable.
+Added logging into outcall.log file
 
 BUG fixes:
-- Fixed critical bug when user is logged on as a domain user.
-- Fixed memory leaks in MAPIEx interface.
-- Fixed bug with memory leak in Call dialog.
-- Fixed bug with Outlook plugin integration on a fresh Windows install.
-- Fixed bug with Dial Window focus.
-- Fixed problems with Outlook integration when running OutCALL as a normal user (both Windows XP and Vista).
-- Some strings in user interface could not be translated. Fixed.
-- "Incoming strip digits" option is fixed so that the largest prefix will be matched first.
-- Fixed bug when Importing Contacts from CSV file.
-- Added C/C++ runtime dependencies into setup.
-- OutCALL stripes out "-" from the phone number before dialing out.
-- In "auth" version of OutCALL it was possible to place calls from extensions for which user was not authorized in OutCALL. Fixed.
-- Fixed GUI control alignment in Settings dialog.
-- Reorganized some internal staff in the code.
+Fixed memory leaks in MAPI interface.
+Fixed bug with memory leak in Call dialog.
+Fixed bug with Outlook plugin integration on a fresh windows install.
+Fixed bug with dial window focus.
+Fixed problems with Outlook integration when running OutCALL as a normal user (both Windows XP and Vista).
+Some strings in user interface could not be translated. Fixed.
 
 
 version 1.40 (11.06.2007)

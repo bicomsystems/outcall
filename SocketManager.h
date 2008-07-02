@@ -85,7 +85,7 @@ public:
 
 	CString FindCalledExtension(CString calleeID);
 
-private:	
+private:
 
 	BOOL m_AppendData;
 	CString m_AppendMsg;

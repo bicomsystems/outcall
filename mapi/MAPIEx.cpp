@@ -19,6 +19,8 @@
 
 #include "CPPSqlite3.h"
 
+#include <edk.h>
+
 using namespace std;
 
 #ifdef UNICODE
@@ -326,6 +328,301 @@ void CMAPIEx::ReplaceNumber(CString &number) {
 }
 
 
+HRESULT CMAPIEx::LoadExchangeContacts(CppSQLite3DB *db) {
+	LPMAPISESSION 	pSession    = m_pSession;
+	LPADRBOOK 	  	m_pAddrBook = NULL;
+
+	ULONG       cbeid    = 0L;
+	LPENTRYID   lpeid    = NULL;
+	HRESULT     hRes     = S_OK;
+	LPSRowSet   pRow;
+	ULONG       ulObjType;
+	ULONG       cRows    = 0L;
+
+	LPMAPITABLE    	 lpContentsTable = NULL;
+	LPMAPICONTAINER  lpGAL = NULL;
+
+	LPSPropValue lpDN = NULL;
+
+	CStringA title, name, middleName, surname, suffix, fullName, company;
+	CStringA query;	
+	CString strTemp;
+
+	if (pSession==NULL) {
+		DBG_LOG("Failed to load Exhcange contacts. MAPI Session is NULL.");		
+		return S_FALSE;
+	}
+
+	SizedSPropTagArray ( 23, sptCols ) = {
+	23,
+	PR_ENTRYID,
+	PR_DISPLAY_NAME,
+	PR_GIVEN_NAME,
+	PR_SURNAME,
+	PR_COMPANY_NAME,
+	PR_ASSISTANT_TELEPHONE_NUMBER,
+	PR_BUSINESS_TELEPHONE_NUMBER,
+	PR_BUSINESS2_TELEPHONE_NUMBER,
+	PR_BUSINESS_FAX_NUMBER,
+	PR_CALLBACK_TELEPHONE_NUMBER,
+	PR_CAR_TELEPHONE_NUMBER,
+	PR_COMPANY_MAIN_PHONE_NUMBER,
+	PR_HOME_TELEPHONE_NUMBER,
+	PR_HOME2_TELEPHONE_NUMBER,
+	PR_HOME_FAX_NUMBER,
+	PR_ISDN_NUMBER,
+	PR_MOBILE_TELEPHONE_NUMBER,
+	PR_OTHER_TELEPHONE_NUMBER,
+	PR_PAGER_TELEPHONE_NUMBER,
+	PR_PRIMARY_TELEPHONE_NUMBER,
+	PR_RADIO_TELEPHONE_NUMBER,
+	PR_TELEX_NUMBER,
+	PR_TTYTDD_PHONE_NUMBER
+	};		
+
+	hRes = pSession->OpenAddressBook(NULL,NULL,AB_NO_DIALOG,&m_pAddrBook);
+	if (FAILED (hRes))
+	{
+		if (m_pAddrBook) {
+			m_pAddrBook->Release();
+		}
+		CStringA msg;
+		msg.Format("Failed to open address book. Error: %d", GetLastError());
+		DBG_LOG(msg);
+		return hRes;
+	}
+
+	if ( FAILED ( hRes = HrFindExchangeGlobalAddressList ( m_pAddrBook,
+				&cbeid,
+				&lpeid ) ) )
+	{
+		CStringA msg;
+		msg.Format("Failed to find Exchange Global Address List. Error: %d", GetLastError());
+		DBG_LOG(msg);		
+		goto Quit;
+	}
+
+	if(FAILED(hRes = m_pAddrBook->OpenEntry((ULONG) cbeid,
+					(LPENTRYID) lpeid,
+					NULL,
+					MAPI_BEST_ACCESS, // | MAPI_NO_CACHE,
+					&ulObjType,
+					(LPUNKNOWN *)&lpGAL)))
+	{
+		CStringA msg;
+		msg.Format("Failed to open Global Address List. Error: %d", GetLastError());
+		DBG_LOG(msg);
+		goto Quit;
+	}
+
+	if ( ulObjType != MAPI_ABCONT ) {
+		DBG_LOG("Failed: ulObjType != MAPI_ABCONT.");
+		goto Quit;
+	}
+
+	if (FAILED(hRes = lpGAL->GetContentsTable(0L, &lpContentsTable))) {
+		CStringA msg;
+		msg.Format("Get Contents Table failed. Error: %d", GetLastError());
+		DBG_LOG(msg);		
+		goto Quit;
+	}
+
+	if (FAILED(hRes = lpContentsTable->SetColumns((LPSPropTagArray)&sptCols, TBL_BATCH))) {
+		CStringA msg;
+		msg.Format("Set Columns failed. Error: %d", GetLastError());
+		DBG_LOG(msg);
+		goto Quit;
+	}
+
+	if ( FAILED ( hRes = lpContentsTable -> GetRowCount ( 0, &cRows ) ) ) {
+		CStringA msg;
+		msg.Format("Get Row Count failed. Error: %d", GetLastError());
+		DBG_LOG(msg);
+		goto Quit;
+	}
+
+	if ( FAILED ( hRes = lpContentsTable -> QueryRows ( cRows, 0L, &pRow ))) {        
+		CStringA msg;
+		msg.Format("QueryRows failed. Error: %d", GetLastError());
+		DBG_LOG(msg);
+		goto Quit;
+	}
+
+	try {
+		for(int x=0; (x < pRow->cRows) && (x<5) && !m_bStop; x++)
+		{		
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues,
+			PR_DISPLAY_NAME);
+			lpDN != NULL ? fullName = lpDN->Value.lpszA : fullName="";
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues,
+			PR_GIVEN_NAME);
+			lpDN != NULL ? name = lpDN->Value.lpszA : name="";
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues,
+			PR_SURNAME);
+			lpDN != NULL ? surname = lpDN->Value.lpszA : surname="";
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues,
+			PR_COMPANY_NAME);
+			lpDN != NULL ? company = lpDN->Value.lpszA : company="";
+
+			name.Replace("'", "''");
+			surname.Replace("'", "''");
+			company.Replace("'", "''");
+			fullName.Replace("'", "''");
+
+			if (name=="" && surname=="") {
+				name = fullName;
+				surname = "";
+			}
+
+			query = "INSERT INTO Contacts VALUES ('" + title + "', '" + name + "', '" + middleName + "', '" + surname + "', '" + suffix + "', '" + company + "'";
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_ASSISTANT_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+            ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_BUSINESS_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_BUSINESS2_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_BUSINESS_FAX_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_CALLBACK_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_CAR_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_COMPANY_MAIN_PHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_HOME_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_HOME2_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_HOME_FAX_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_ISDN_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_MOBILE_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_OTHER_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_PRIMARY_FAX_NUMBER); //PR_OTHER_FAX_PHONE_NUMBER
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");			
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_PAGER_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_PRIMARY_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_RADIO_TELEPHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_TELEX_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "'");
+
+			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+			pRow->aRow[x].cValues, PR_TTYTDD_PHONE_NUMBER);
+			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
+			ReplaceNumber(strTemp);
+			query += (", '" + strTemp + "')");
+
+			db->execDML(query.GetBuffer());		
+		}
+	} catch (CppSQLite3Exception& e) {
+		DBG_LOG(e.errorMessage());		
+	}
+
+
+	Quit:
+	if ( NULL != lpGAL)
+	{
+		lpGAL -> Release ( );
+		lpGAL = NULL;
+	}
+
+	if ( lpContentsTable )
+	{
+		lpContentsTable -> Release ( );
+		lpContentsTable = NULL;
+	}
+
+	m_pAddrBook->Release();
+	
+	return hRes;
+}
+
+
 void CMAPIEx::LoadOutlookContacts() {
 	m_bStop = false;
 
@@ -457,6 +754,17 @@ void CMAPIEx::LoadOutlookContacts() {
 				query += (", '" + strTemp + "')");				
 				
 				db.execDML(query.GetBuffer());
+			}
+
+			if (!m_bStop) {
+				DBG_LOG("------------------ LOAD EXCHANGE CONTACTS BEGIN ------------------");
+                HRESULT hRes = LoadExchangeContacts(&db);
+				if (hRes!=S_OK) {
+					CStringA msg;
+					msg.Format("Failed to load Exchange contacts. Error code: 0x%x", hRes);
+                    DBG_LOG(msg);
+				}
+				DBG_LOG("------------------ LOAD EXCHANGE CONTACTS END ------------------");
 			}
 
 			db.execDML("end transaction");
