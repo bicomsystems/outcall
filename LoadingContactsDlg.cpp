@@ -35,7 +35,11 @@ END_MESSAGE_MAP()
 
 // CLoadingContactsDlg message handlers
 
+#ifdef _WIN64
+void CLoadingContactsDlg::OnTimer(UINT_PTR nIDEvent)
+#else
 void CLoadingContactsDlg::OnTimer(UINT nIDEvent)
+#endif
 {
 	// TODO: Add your message handler code here and/or call default
 	if (nIDEvent==TIMER_CHECK_LOADING_STATUS) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -63,6 +63,7 @@
 //extern char* DATABASE_ACCESS_MUTEX;
 
 UINT RefreshContactsProc( LPVOID pParam );
+extern UINT AddNewOutlookContactThreadProc( LPVOID pParam );
 
 class CMainFrame : public CFrameWnd
 {
@@ -114,8 +115,12 @@ protected:
 	afx_msg void OnUpdateFileCall(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateFileAddContact(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateFileFindContact(CCmdUI* pCmdUI);
-	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);	
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
+#ifdef _WIN64
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+#else
 	afx_msg void OnTimer(UINT nIDEvent);
+#endif
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
@@ -145,6 +150,7 @@ private:
 	LRESULT OnStopSocketCommunication(WPARAM wParam, LPARAM lParam);
 	LRESULT OnCallNotifyDialogClick(WPARAM wParam, LPARAM lParam);
 	LRESULT OnNewCallMsg(WPARAM wParam, LPARAM lParam);
+	LRESULT OnReloadOutlookContactsMsg(WPARAM wParam, LPARAM lParam);
 	
 	CBrush		m_BrushToolTip;
 	CBrush		m_BrushShadow;
@@ -174,6 +180,8 @@ public:
 	void LoadOutlookContacts(BOOL bDeleteExistingContacts/*if this parameter is NULL, load from Outlook, otherwise load from CSV*/);
 	void CancelLoadOutlookContacts();
 };
+
+extern CMainFrame *g_pMainWindow;
 
 /////////////////////////////////////////////////////////////////////////////
 

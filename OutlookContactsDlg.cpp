@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -221,8 +221,9 @@ BOOL COutlookContactsDlg::OnInitDialog()
 	InitLocaleGUI();
 
 	SetWindowPos(&this->wndTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
+	this->SetForegroundWindow();
 	
-	return FALSE;  // return TRUE  unless you set the focus to a control
+	return TRUE; //FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -359,8 +360,12 @@ void COutlookContactsDlg::LoadContacts()
 			fullName = fullName.TrimLeft();
 
 			company = q.fieldValue(5);
-			if (company.Trim()!="")
-				fullName += (" (" + CString(q.fieldValue(5)) + ")");
+			if (company.Trim()!="") {
+				if (fullName!="")
+					fullName += (" (" + CString(q.fieldValue(5)) + ")");
+				else
+					fullName = CString(q.fieldValue(5));
+			}
 
 			if (bSelectedOutlookContact && bOutlookContactFound==false) {
                 bOutlookContactFound = true;
@@ -578,11 +583,7 @@ void COutlookContactsDlg::OnOK() {
 		m_btnDial.EnableWindow(0);
 		socketManager->SendData(packetString);
 	}
-	/*if (socketManager->WriteComm(byBuffer, nLen, INFINITE) <= 0) {
-		MessageBox(_("Some error ocurred while trying to place the call! Try again."), APP_NAME, MB_OK | MB_ICONERROR);
-		m_btnDial.EnableWindow(1);
-	}*/
-
+	
 	if (m_bMultipleCalls) {
 		if (m_Callees.size()>0) {
 			SetWindowText(CString(APP_NAME) + " - " + _("Dial") + " [" + m_Callees[0] + "]");
@@ -621,8 +622,11 @@ void COutlookContactsDlg::LoadExtensions() {
 	DWORD Size;
 	DWORD dwNo = 0;
 
-
+#ifdef MULTI_TENANT
+	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS && i<1; i++) 
+#else
 	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS; i++) 
+#endif
     {		
 
 		Size = MAX_REG_KEY_NAME;

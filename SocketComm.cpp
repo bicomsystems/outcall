@@ -1016,7 +1016,7 @@ void CSocketComm::Run()
 		} else {
             time(&current_time);
 			if ((current_time-last_recv_time)>=60) {
-				CString buff = "Action: Ping\r\n\r\n";
+				CStringA buff = "Action: Ping\r\n\r\n";
 				int nLen = buff.GetLength();                
 				if (WriteComm( (LPBYTE)buff.GetBuffer(), nLen, 5000)==0) {
 					OnEvent( EVT_CONDROP );

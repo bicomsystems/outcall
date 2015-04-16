@@ -54,7 +54,7 @@ protected:
 public:
 	void StopLoadingContacts();
 	void LoadOutlookContacts();
-	HRESULT LoadExchangeContacts(CppSQLite3DB *db);
+	HRESULT LoadExchangeContacts(CppSQLite3DB *db, CString &error_message);
 
 	IMAPISession* GetSession() { return m_pSession; }
 	static LPCTSTR GetValidString(SPropValue& prop);
@@ -62,12 +62,14 @@ public:
 	static BOOL Init(BOOL bMultiThreadedNotifcations=TRUE);
 	static void Term();
 	HRESULT LoadProfileDetails(std::vector<CString> &vProfiles/*, int &nDefault, bool bInitializeMAPI*/);
-	BOOL OpenMessageStore(LPCTSTR szStore=NULL,ULONG ulFlags=MAPI_MODIFY | MAPI_NO_CACHE);
+	
 	BOOL Login();
 	void Logout();
 
 // Operations
 private:
+	BOOL OpenMessageStore(LPCTSTR szStore=NULL,ULONG ulFlags=MAPI_BEST_ACCESS/*MAPI_MODIFY | MAPI_NO_CACHE*/);
+
 	LPMDB GetMessageStore() { return m_pMsgStore; }
 	LPMAPIFOLDER GetFolder() { return m_pFolder; }
 
@@ -94,7 +96,11 @@ private:
 	std::vector<CString> m_prefixes;
 	std::vector<CString> m_replacements;
 	void ReplaceNumber(CString &number);
+
+	CString GetExchangeValue(LPSPropValue);
 };
+
+extern CMAPIEx gMapiEx;
 
 #ifndef PR_BODY_HTML
 #define PR_BODY_HTML PROP_TAG(PT_TSTRING,0x1013)

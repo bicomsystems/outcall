@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -103,6 +103,12 @@
 	#define _(String) gettext(String)
 #endif
 
+#ifdef MULTI_TENANT
+#define DEFAULT_PORT	"5037"
+#else
+#define DEFAULT_PORT	"5038"
+#endif
+
 
 // Outlook 2000
 //#import "mso9.dll" named_guids
@@ -119,22 +125,23 @@
 	no_namespace exclude("_IRecipientControl", "_DRecipientControl")*/
 
 
-#define APP_NAME				_T("OutCALL")
-#define WM_ICON_NOTIFY			WM_USER+10
-#define OUTLOOK_MESSAGE			WM_USER+20
-#define STOP_COMM_MESSAGE		WM_USER+30
-#define NEW_CALL_MESSAGE		WM_USER+40
-#define WM_REFRESH_MC_LIST		WM_USER+50
-#define WM_AUTHENTICATE			WM_USER+60
-#define WM_REFRESH_ACTIVE_CALLS WM_USER+70
-#define WM_ENABLE_DIAL_BUTTON   WM_USER+80
+#define APP_NAME					_T("OutCALL")
+#define WM_ICON_NOTIFY				WM_USER+10
+#define OUTLOOK_MESSAGE				WM_USER+20
+#define STOP_COMM_MESSAGE			WM_USER+30
+#define NEW_CALL_MESSAGE			WM_USER+40
+#define WM_REFRESH_MC_LIST			WM_USER+50
+#define WM_AUTHENTICATE				WM_USER+60
+#define WM_REFRESH_ACTIVE_CALLS		WM_USER+70
+#define WM_ENABLE_DIAL_BUTTON		WM_USER+80
+#define WM_RELOAD_OUTLOOK_CONTACTS	WM_USER+90
 
 //#define WM_TRAY_ICON_DBLCLICK	WM_USER+40
 
 #define MAX_REG_KEY_NAME		100
 //#define MAX_REG_KEY_VALUE		32767
 
-#define BRAND_COPYRIGHT		_T("(c) Copyright Bicom Systems Ltd. 2003-2008")
+#define BRAND_COPYRIGHT		_T("(c) Copyright Bicom Systems Ltd. 2003-2010")
 #define BRAND_POWERED_BY	_T("Bicom Systems Ltd.")
 #define BRAND_WEB_PAGE		_T("http://www.bicomsystems.com")
 
@@ -143,7 +150,7 @@
 
 #define POPUP_BITMAP_ID		IDB_POPUP
 
-#define OUTCALL_VERSION		55
+#define OUTCALL_VERSION		60
 
 #define REG_KEY_APP			_T("BicomSystems")
 #define APP_REG_KEY			_T("Software\\BicomSystems\\OutCALL")
@@ -154,7 +161,17 @@
 extern TCHAR OUTCALL_DB[256];
 extern BOOL AUTH_ENABLED;
 
-#undef fprintf; // libintl.h defines fprintf which in debug version causes access violation
+#undef fprintf // libintl.h defines fprintf which in debug version causes access violation
+
+#if defined _M_IX86
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_IA64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_X64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#else
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
 
 #ifdef ENABLE_DBGLOG	
 	extern FILE *g_hLogFile;
@@ -175,6 +192,10 @@ extern BOOL AUTH_ENABLED;
 #else
 	#define DBG_LOG(s)
 #endif
+
+extern bool IsNumeric(const char *p);
+
+CString EscapeSQLString(CString s);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

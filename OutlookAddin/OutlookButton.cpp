@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -34,7 +34,7 @@
 #include "stdafx.h"
 #include "MyAddin.h"
 
-#include "MAPIEx.h"
+//#include "MAPIEx.h"
 
 #include <vector>
 
@@ -175,7 +175,11 @@ IDispatchPtr COutlookButton::FindContact(_bstr_t query) {
 	catch(_com_error &e)
 	{
 		MessageBox(NULL, (char *)e.Description(), APP_NAME, MB_ICONERROR);
-	}    
+	}
+	/*finally
+	{
+		MessageBox(NULL, "error", APP_NAME, MB_ICONERROR);
+	}*/
 
 	return pContact;
 }
@@ -225,26 +229,9 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
     if (pDispParams->cArgs != 2) 
 		return DISP_E_BADPARAMCOUNT;
 
-	/*CMAPIEx mapi;
-	if(!CMAPIEx::Init() || !mapi.Login("Outlook") || !mapi.OpenMessageStore("")) {
-		MessageBox(NULL, "Failed to initialize MAPI", "Error", MB_OK);
-		return S_OK;
-	}
-
-	MessageBox(NULL, mapi.GetProfileName(), "Test", MB_OK);*/
-
-	// you can use this profile name as an argument for Login() when no MAPI provider is open (ie Outlook)
-	//printf("Profile Name: %s\n",mapi.GetProfileName());
-
-	
-
 	try {
 		if( pDispParams->rgvarg[1].vt == VT_DISPATCH ) 
 		{
-			//OutlookSecurity::SecurityManager
-			
-			//OutlookSecurity::SecurityManager sec;
-			
 			Outlook::_ExplorerPtr spExplorer = m_OLAppPtr->ActiveExplorer();
             _ContactItemPtr pContactItem = NULL;
 			CString fullName="";
@@ -257,16 +244,16 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 				enum Outlook::OlItemType olt;
 				hr = currFolder->get_DefaultItemType(&olt);
 				if (!FAILED(hr)) {
-					if (olt==(Outlook::OlItemType)2) {												
+					if (olt==Outlook::olContactItem) {
 						IDispatchPtr pContact = GetSelectedItem(spExplorer);
 						if (pContact!=NULL) {
 							pContactItem = (Outlook::_ContactItemPtr)pContact;
 							fullName = (LPCTSTR)pContactItem->GetFullName();							
 						}					
-					} else if (olt==(Outlook::OlItemType)0) {						
+					} else if (olt==(Outlook::OlItemType)0) {
 						Outlook::MAPIFolderPtr pParentFolder = (Outlook::MAPIFolderPtr)currFolder->GetParent();
 
-						if (pParentFolder!=NULL) {
+						if (pParentFolder!=NULL) {							
 							IDispatchPtr pSelectedItem = GetSelectedItem(spExplorer);
 							Outlook::_MailItemPtr pMailItem;
 							//Outlook::_ContactItemPtr pContactItem;												
@@ -274,7 +261,11 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 							BOOL itemType = 0; // 0-other, 1-mail, 2-contact
 
 							if (pSelectedItem!=NULL) {
-								HRESULT hr = pSelectedItem->QueryInterface(&pMailItem);
+								
+								pMailItem = (Outlook::_MailItemPtr)pSelectedItem;
+								itemType = 1;
+								
+								/*HRESULT hr = pSelectedItem->QueryInterface(&pMailItem);
 
 								if (FAILED(hr)) {
 									hr = pSelectedItem->QueryInterface(&pContactItem);
@@ -282,7 +273,7 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 										itemType = 2;							
 								} else {
 									itemType = 1;
-								}
+								}*/
 
 								if (itemType==1) { //mail item
 									if ((pTemp=pParentFolder->GetParent())==NULL) {						
@@ -297,7 +288,7 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 												break;
 										}
 									}
-																		
+
 									if ((pParentFolder->GetName()==nameSpace->GetDefaultFolder(Outlook::olFolderOutbox)->GetName()) ||
 										(pParentFolder->GetName()==nameSpace->GetDefaultFolder(Outlook::olFolderSentMail)->GetName()) ||
 										(pParentFolder->GetName()==nameSpace->GetDefaultFolder(Outlook::olFolderDrafts)->GetName())) {
@@ -309,9 +300,11 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 										/*fullName += "#####";
 										fullName += (LPCTSTR)pMailItem->GetTo();*/
 									}
+																		
 									pContactItem = FindContact(CString(CString("[FullName] = '") + fullName + "'").AllocSysString());
+									
 								} else if (itemType==2) { //contact item
-									fullName = (LPCTSTR)pContactItem->GetFullName();									                                    
+									fullName = (LPCTSTR)pContactItem->GetFullName();
 								}
 							}							
 						}
@@ -405,19 +398,21 @@ STDMETHODIMP COutlookButton::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 			CString strWindowTitle = "BSOC Main Application Window";
 			CString strDataToSend;
 			
-			if (fullName=="") {
-				strDataToSend = _T("Dial");
-			} else {
-				CString ContactName;
-				if (pContactItem) {
-                    ContactName = CString((LPCTSTR)pContactItem->GetFirstName()) + " | " + 
+			CString ContactName;
+			if (pContactItem) {
+				fullName = (LPCTSTR)pContactItem->GetFullName();
+				if (fullName!="") {
+					ContactName = CString((LPCTSTR)pContactItem->GetFirstName()) + " | " + 
 					CString((LPCTSTR)pContactItem->GetMiddleName()) + " | " +
 					CString((LPCTSTR)pContactItem->GetLastName());
 				} else {
-                    ContactName = fullName;
+					ContactName = (LPCTSTR)pContactItem->GetCompanyName();
 				}
-				strDataToSend = _T("Dial#####" + ContactName + "#####" + numbers);				
+			} else {
+                ContactName = fullName;
 			}
+			strDataToSend = _T("Dial#####" + ContactName + "#####" + numbers);
+			
 
 	    
 			LRESULT copyDataResult;			

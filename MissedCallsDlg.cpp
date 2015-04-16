@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -142,7 +142,11 @@ void CMissedCallsDlg::LoadExtensions() {
 	DWORD Size;
 	DWORD dwNo = 0;
 
-	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS; i++) 
+#ifdef MULTI_TENANT
+	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS && i<1; i++)
+#else
+	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS; i++)
+#endif
     {		
 		Size = MAX_REG_KEY_NAME;
 		DWORD dwNo = 100;
@@ -311,6 +315,7 @@ LRESULT CMissedCallsDlg::OnMsgRefresh(WPARAM wParam, LPARAM lParam) {
 }
 
 
+
 void CMissedCallsDlg::OnBnClickedButtonCall()
 {
 	// TODO: Add your control notification handler code here
@@ -323,14 +328,12 @@ void CMissedCallsDlg::OnBnClickedButtonCall()
 	if (::theApp.CheckForExistingDialWindow())
 		return;
 
-	COutlookContactsDlg dlg;
 	CString callerID, channel, extension, protocol, packetString;
-	CString numberToDial;
+	CString number1, number2, numberToDial;
 	BYTE byBuffer[512] = { 0 };				
 	int nLen;
-	int nItem, nIndex;
+	int nItem, nIndex, nIndex2;
 	int tableSel = m_cboShow.GetCurSel();
-	double number;
 
 	CString outgoing_context = ::theApp.GetProfileString("Settings", "OutgoingContext", "default");
 	if (outgoing_context=="")
@@ -341,7 +344,7 @@ void CMissedCallsDlg::OnBnClickedButtonCall()
 		MessageBox(_("Select some item first!"), APP_NAME, MB_OK | MB_ICONINFORMATION);
 		return;
 	}
-	while (nItem!=-1) {
+	if (nItem!=-1) {
 		if ((tableSel==0) || (tableSel==1))
 			channel = m_list.GetItemText(nItem, 1);
 		else
@@ -349,8 +352,9 @@ void CMissedCallsDlg::OnBnClickedButtonCall()
 
 		nIndex = channel.ReverseFind('(');
 		protocol = channel.Mid(nIndex+1, channel.GetLength()-nIndex-2);
-		extension = channel.Left(nIndex-2);
-		if (protocol.MakeUpper()=="IAX")
+		extension = channel.Left(nIndex);
+		extension = extension.Trim();
+		if (protocol.MakeUpper()=="IAX" || protocol.MakeUpper()=="IAX2")
 			channel = "IAX2/" + extension;
 		else if (protocol.MakeUpper()=="SIP")
 			channel = "SIP/" + extension;
@@ -362,76 +366,30 @@ void CMissedCallsDlg::OnBnClickedButtonCall()
 		else
 			callerID = m_list.GetItemText(nItem, 1);
 
-		/*callerID1 = callerID;
-		nIndex = callerID1.Find("  (");
-		if (nIndex!=-1) {
-			callerID1 = callerID1.Left(nIndex);
-			callerID2 = callerID.Mid(nIndex+3);
-			callerID2 = callerID2.Left(callerID2.GetLength()-1);
-		}
-		callerID1.Replace("+", "00");		
-		callerID1.Replace("(", "");
-		callerID1.Replace(")", "");
-		callerID1.Replace(" ", "");
-		callerID1.Replace("-", "");
-
-		callerID2.Replace("+", "00");		
-		callerID2.Replace("(", "");
-		callerID2.Replace(")", "");
-		callerID2.Replace(" ", "");
-		callerID2.Replace("-", "");
-
-		number = atof(callerID1.GetBuffer());
-		if (number!=0) {
-			numberToDial = callerID1;
+		nIndex = callerID.Find(_T("  ("));
+		//nIndex2 = callerID.ReverseFind(_T(")"));
+		if (nIndex==-1) {
+			number1 = callerID.Trim();
+			number2 = number1;
 		} else {
-			number = atof(callerID2.GetBuffer());
-			if (number!=0)
-				numberToDial = callerID2;
-		}*/
+			number1 = callerID.Left(nIndex).Trim();
+			number2 = callerID.Mid(nIndex+3, callerID.GetLength()-nIndex-4);
+		}
+
+		if (IsNumeric(CStringA(number1).GetBuffer())) {
+			numberToDial = number1;
+		} else if (IsNumeric(CStringA(number2).GetBuffer())) {
+			numberToDial = number2;
+		} else {
+			MessageBox(_T("CallerID is invalid."));
+			return;
+		}
+
+		CString packetString = ::theApp.BuildOriginateCommand(channel, numberToDial, extension, "ActionID: outcall_dial_action");
 		
-		if (number==0) {
-			dlg.m_Callees.push_back(callerID);
-			dlg.m_CallerPhones.push_back(m_list.GetItemText(nItem, 1));
-		} else {
-            /*CString prefix = ::theApp.GetProfileString("Settings", "OutgoingPrefix", "");
-			numberToDial = prefix + numberToDial;			
-
-			packetString = "Action: Originate\r\n";
-			packetString += "Channel: " + channel + "\r\n";			
-			
-			packetString += "Exten: " + numberToDial + "\r\n";
-			packetString += "Context: " + outgoing_context + "\r\n";	
-			packetString += "Priority: 1\r\n";
-			packetString += "CallerID: " + extension + "\r\n";
-			packetString += "\r\n";*/
-
-			numberToDial = callerID;
-			nIndex = numberToDial.Find(_T("  ("));
-			if (nIndex!=-1) {
-				numberToDial = numberToDial.Left(nIndex);			
-			}
-
-			CString packetString = ::theApp.BuildOriginateCommand(channel, numberToDial, extension);
-			
-			/*nLen = packetString.GetLength();
-			strcpy((LPSTR)byBuffer, packetString);
-			
-			if (socketManager->WriteComm(byBuffer, nLen, INFINITE) <= 0)
-				MessageBox(_("Some error ocurred while trying to place the call! Try again."), APP_NAME, MB_OK | MB_ICONERROR);*/
-			if (packetString!=_T("")) {
-				socketManager->SendData(packetString);
-			}
-
+		if (packetString!=_T("")) {
+			socketManager->SendData(packetString);
 		}
-		nItem = m_list.GetNextItem(nItem, LVNI_SELECTED);
-	}
-	
-	if (dlg.m_Callees.size()>0) {
-		dlg.m_LoadContacts=FALSE;	
-		dlg.socketManager = socketManager;
-		dlg.m_bMultipleCalls = TRUE;
-		dlg.DoModal();
 	}
 }
 
@@ -469,7 +427,8 @@ void CMissedCallsDlg::OnBnClickedButtonRemove()
 				sTime = sDate.Mid(nIndex+2);
 				sDate = sDate.Mid(0, nIndex);
 
-				query = "delete from " + table + " where (CallerID='" + callerID + "' and Callee='" + callee + "' and Date='" + sDate +"' and Time='" + sTime + "')";
+				query = "delete from " + table + " where (CallerID='" + EscapeSQLString(callerID) + "' and Callee='" + 
+					EscapeSQLString(callee) + "' and Date='" + sDate +"' and Time='" + sTime + "')";
 				db.execDML(query.GetBuffer());
 				
 				m_list.DeleteItem(nItem);
@@ -532,10 +491,7 @@ void CMissedCallsDlg::OnBnClickedButtonAddContact()
 	double number;
 	CString callerID, callerID1="", callerID2="", sNumber="";
 
-	_ApplicationPtr pApp; //Outlook Application Instance
-	pApp.CreateInstance(__uuidof(Application));
-	IDispatchPtr contactPtr;
-	_ContactItemPtr cItem;
+	CString phone_number, full_name;	
 
 	while (nItem!=-1) {
 		if ((tableSel==0) || (tableSel==1))
@@ -560,33 +516,45 @@ void CMissedCallsDlg::OnBnClickedButtonAddContact()
 				sNumber = callerID2;
 		}
 
-		try
-		{												
-			contactPtr = pApp->CreateItem(olContactItem);
-			if (contactPtr!=NULL) {
-				cItem = (_ContactItemPtr)contactPtr;
-				if (number!=0) {
-					cItem->put_BusinessTelephoneNumber(sNumber.AllocSysString());
-					if (sNumber==callerID1)
-						cItem->put_FullName(callerID2.AllocSysString());
-					else
-						cItem->put_FullName(callerID1.AllocSysString());
-				} else {
-					cItem->put_FullName(callerID1.AllocSysString());
-					cItem->put_BusinessTelephoneNumber(callerID2.AllocSysString());
-				}
-												
-				cItem->Display();	
-			}			
-		}		
-		catch(_com_error &e)
-		{
-			TRACE((char*)e.Description());
-		}		
+		if (number!=0) {
+			phone_number = sNumber;
+			if (sNumber==callerID1)
+				full_name = callerID2;
+			else
+				full_name = callerID1;				
+		} else {
+			full_name = callerID1;
+			phone_number = callerID2;
+		}
 
-		nItem = m_list.GetNextItem(nItem, LVNI_SELECTED);
-	}
-	pApp.Release();
+		//try
+		//{
+		//	_ApplicationPtr pApp; //Outlook Application Instance
+		//	pApp.CreateInstance(__uuidof(Application));
+		//	IDispatchPtr contactPtr;
+		//	_ContactItemPtr cItem;
+
+		//	contactPtr = pApp->CreateItem(olContactItem);
+		//	if (contactPtr!=NULL) {
+		//		cItem = (_ContactItemPtr)contactPtr;
+		//		cItem->put_BusinessTelephoneNumber(phone_number.AllocSysString());
+		//		cItem->put_FullName(full_name.AllocSysString());
+		//		cItem->Display();	
+		//	}			
+		//}		
+		//catch(_com_error &e)
+		//{
+		//	TRACE((char*)e.Description());
+		//}
+		//pApp.Release();
+		
+		CString *info = new CString(full_name + "###" + phone_number);
+		AfxBeginThread(AddNewOutlookContactThreadProc, info);
+
+		break;
+
+		//nItem = m_list.GetNextItem(nItem, LVNI_SELECTED);
+	}	
 }
 
 

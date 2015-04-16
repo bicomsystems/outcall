@@ -1,0 +1,778 @@
+# Denis <denisk@bicomsystems.com>, 2008.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: OutCALL 1.50\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-06-12 16:46+0100\n"
+"PO-Revision-Date: 2008-10-16 20:24+0200\n"
+"Last-Translator: Nicola Tuveri <nicola.tuveri@itfor.it>\n"
+"Language-Team: Italian <tp@lists.linux.it>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit"
+
+#: ActiveCallsDlg.cpp:83
+msgid "Are you sure you want to hangup the selected channels?"
+msgstr "Volete riagganciare i canali selezionati?"
+
+#: ActiveCallsDlg.cpp:106
+#: MCListCtrl.cpp:116
+msgid "From"
+msgstr "Da"
+
+#: ActiveCallsDlg.cpp:107
+#: MCListCtrl.cpp:117
+msgid "To"
+msgstr "A"
+
+#: ActiveCallsDlg.cpp:156
+#: ActiveCallsDlg.cpp:157
+#: MainFrm.cpp:617
+msgid "Active Calls"
+msgstr "Chiamate Attive"
+
+#: ActiveCallsDlg.cpp:158
+#: AddExtenDlg.cpp:187
+#: AddLanguageDlg.cpp:70
+#: LoadingContactsDlg.cpp:64
+#: MapContactFieldsDlg.cpp:163
+#: OutlookRuleDlg.cpp:92
+msgid "&Cancel"
+msgstr "&Annulla"
+
+#: ActiveCallsDlg.cpp:159
+msgid "&Hangup"
+msgstr "&Riaggancia"
+
+#: ActiveCallsDlg.cpp:160
+msgid "Close"
+msgstr "Chiudi"
+
+#: AddExtenDlg.cpp:135
+msgid "Invalid phone number!"
+msgstr "Numero telefonico non valido!"
+
+#: AddExtenDlg.cpp:144
+msgid "Password fields doesn't match!"
+msgstr "Le password non corrispondono!"
+
+#: AddExtenDlg.cpp:150
+msgid "Either the extension or password is invalid. Please check the extension, password and protocol again!"
+msgstr "L'extension o la password non sono valide. Cortesemente controllare nuovamente extension, password e protocollo!"
+
+#: AddExtenDlg.cpp:178
+msgid "Edit extension"
+msgstr "Modifica extension"
+
+#: AddExtenDlg.cpp:180
+msgid "Add extension"
+msgstr "Aggiungi extension"
+
+#: AddExtenDlg.cpp:182
+msgid "&Extension"
+msgstr "&Extension"
+
+#: AddExtenDlg.cpp:183
+msgid "&Protocol"
+msgstr "&Protocollo"
+
+#: AddExtenDlg.cpp:184
+msgid "Pass&word"
+msgstr "Pass&word"
+
+#: AddExtenDlg.cpp:185
+msgid "&Re-type password"
+msgstr "&Reinserimento password"
+
+#: AddExtenDlg.cpp:186
+#: MapContactFieldsDlg.cpp:162
+#: OutlookRuleDlg.cpp:91
+#: PBXClient.cpp:797
+#: PBXClient.cpp:817
+msgid "&OK"
+msgstr "&OK"
+
+#: AddLanguageDlg.cpp:54
+msgid "Please select some language in the list."
+msgstr "Selezionare qualche lingua dalla lista per cortesia."
+
+#: AddLanguageDlg.cpp:67
+msgid "Add Language"
+msgstr "Aggiungi Lingua"
+
+#: AddLanguageDlg.cpp:68
+msgid "Select language"
+msgstr "Seleziona lingua"
+
+#: AddLanguageDlg.cpp:69
+msgid "&Add language"
+msgstr "&Aggiungi lingua"
+
+#: DebugDlg.cpp:115
+#: DebugDlg.cpp:116
+msgid "Debug info"
+msgstr "Informazioni di debug"
+
+#: DebugDlg.cpp:117
+msgid "&Clear"
+msgstr "&Pulisci"
+
+#: DebugDlg.cpp:118
+#: OutlookContactsDlg.cpp:877
+msgid "E&xit"
+msgstr "&Esci"
+
+#: FindContactDlg.cpp:165
+msgid "Synchronizing with Outlook Contacts. Please wait..."
+msgstr "Sincronizzazione con Contatti Outlook in corso. Attendere prego..."
+
+#: FindContactDlg.cpp:348
+msgid "Name"
+msgstr "Nome"
+
+#: FindContactDlg.cpp:349
+#: FindContactDlg.cpp:414
+#: OutlookContactsDlg.cpp:206
+#: OutlookContactsDlg.cpp:871
+msgid "Phone number"
+msgstr "Numero di telefono"
+
+#: FindContactDlg.cpp:350
+#: OutlookContactsDlg.cpp:207
+#, fuzzy
+msgid "Location"
+msgstr "Posizione"
+
+#: FindContactDlg.cpp:410
+#: MainFrm.cpp:627
+msgid "Find"
+msgstr "Trova"
+
+#: FindContactDlg.cpp:412
+#: OutlookContactsDlg.cpp:869
+msgid "Dial from"
+msgstr "Chiama da"
+
+#: FindContactDlg.cpp:413
+msgid "Search"
+msgstr "Cerca"
+
+#: FindContactDlg.cpp:415
+#: OutlookContactsDlg.cpp:872
+msgid "Phone numbers"
+msgstr "Numeri telefonici"
+
+#: FindContactDlg.cpp:417
+#: OutlookContactsDlg.cpp:876
+msgid "&Dial"
+msgstr "&Chiama"
+
+#: FindContactDlg.cpp:418
+#: MissedCallsDlg.cpp:605
+msgid "&Close"
+msgstr "Chi&udi"
+
+#: LoadingContactsDlg.cpp:63
+msgid "Loading Outlook contacts. This may take some time. Please wait..."
+msgstr "Caricamento contatti Outlook. L'operazione puo' durare a lungo. Attendere prego..."
+
+#: MainFrm.cpp:387
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: MainFrm.cpp:401
+#: MainFrm.cpp:474
+#: MainFrm.cpp:601
+msgid "Signing In"
+msgstr "Autenticazione in corso"
+
+#: MainFrm.cpp:409
+msgid "Cancelling Sign In..."
+msgstr "Annullamento autenticazione"
+
+#: MainFrm.cpp:417
+msgid "Are you sure you want to sign out?"
+msgstr "Sei certo di volerti sconnettere?"
+
+#: MainFrm.cpp:431
+#: MainFrm.cpp:451
+#: MainFrm.cpp:468
+#: MainFrm.cpp:493
+#: MainFrm.cpp:580
+#: MainFrm.cpp:1272
+msgid "Not Signed In"
+msgstr "Non autenticato"
+
+#: MainFrm.cpp:551
+msgid "Connection to server couldn't be established! Details: socket already open."
+msgstr "Non si puo' stabilire una connessione col server! Dettagli: socket gia' aperto."
+
+#: MainFrm.cpp:557
+#, c-format
+msgid "Connection to server couldn't be established! Details: %s"
+msgstr "Non·si·puo'·stabilire·una·connessione·col·server!·Dettagli:·%s"
+
+#: MainFrm.cpp:656
+msgid "Sign Out"
+msgstr "Sconnetti"
+
+#: MainFrm.cpp:659
+#: MainFrm.cpp:668
+msgid "Cancelling..."
+msgstr "Annullamento..."
+
+#: MainFrm.cpp:662
+#: MainFrm.cpp:671
+msgid "Cancel Sign In"
+msgstr "Annulla autenticazione"
+
+#: MainFrm.cpp:674
+#: MainFrm.cpp:678
+#: MainFrm.cpp:684
+msgid "Sign In"
+msgstr "Autentica"
+
+#: MainFrm.cpp:783
+msgid "You must be Signed In in order to place calls from Outlook."
+msgstr "E' necessario essere autenticati per originare chiamate da Outlook."
+
+#: MainFrm.cpp:1035
+#: MainFrm.cpp:1037
+#: MainFrm.cpp:1039
+#: MainFrm.cpp:1057
+#, c-format
+msgid ""
+"You have a Call\n"
+"From: %s\n"
+"To: %s"
+msgstr ""
+"Chiamata in ingresso\n"
+"Da:·%s\n"
+"A:·%s"
+
+#: MainFrm.cpp:1279
+msgid "Call History"
+msgstr "Registro chiamate"
+
+#: MainFrm.cpp:1305
+#: OutlookContactsDlg.cpp:751
+msgid "Do you want to save your existing contacts?"
+msgstr "Desideri salvare i contatti esistenti?"
+
+#: MainFrm.cpp:1362
+msgid "Failed to initialize MAPI!"
+msgstr "Inizializzazione MAPI fallita!"
+
+#: MainFrm.cpp:1450
+msgid "Error opening CSV file."
+msgstr "Errore nell'apertura del file CSV."
+
+#: MapContactFieldsDlg.cpp:48
+msgid "Field"
+msgstr "Campo"
+
+#: MapContactFieldsDlg.cpp:49
+msgid "Mapped from"
+msgstr "Mapped from"
+
+#: MapContactFieldsDlg.cpp:51
+msgid "Value"
+msgstr "Valore"
+
+#: MapContactFieldsDlg.cpp:157
+#, fuzzy
+msgid "Map custom fields"
+msgstr "Map custom fields"
+
+#: MapContactFieldsDlg.cpp:158
+msgid "Mapped fields:"
+msgstr "Mapped fields:"
+
+#: MapContactFieldsDlg.cpp:159
+msgid "Outlook fields:"
+msgstr "Campi Outlook:"
+
+#: MapContactFieldsDlg.cpp:160
+#, fuzzy
+msgid "&Map selected fields"
+msgstr "&Map selected fields"
+
+#: MapContactFieldsDlg.cpp:176
+#, fuzzy
+msgid "Please select items on both left and right list."
+msgstr "Selezionare elementi in entrambe le liste."
+
+#: MCListCtrl.cpp:118
+#: MissedCallsDlg.cpp:599
+msgid "Date"
+msgstr "Data"
+
+#: MissedCallsDlg.cpp:99
+#: MissedCallsDlg.cpp:518
+#: MissedCallsDlg.cpp:601
+msgid "Missed Calls"
+msgstr "Chiamate perse"
+
+#: MissedCallsDlg.cpp:100
+#: MissedCallsDlg.cpp:520
+msgid "Received Calls"
+msgstr "Chiamate ricevute"
+
+#: MissedCallsDlg.cpp:101
+#: MissedCallsDlg.cpp:522
+msgid "Placed Calls"
+msgstr "Chiamate effettuate"
+
+#: MissedCallsDlg.cpp:104
+#: MissedCallsDlg.cpp:107
+msgid "Show all"
+msgstr "Mostra tutte"
+
+#: MissedCallsDlg.cpp:108
+msgid "Today"
+msgstr "Oggi"
+
+#: MissedCallsDlg.cpp:319
+msgid "You must be Signed In in order to place calls."
+msgstr "E' necessario essere autenticati per originare chiamate."
+
+#: MissedCallsDlg.cpp:341
+msgid "Select some item first!"
+msgstr "Selezionare qualche elemento prima!"
+
+#: MissedCallsDlg.cpp:446
+msgid "Are you sure you want to delete the selected items?"
+msgstr "Sei sicuro di voler cancellare gli elementi selezionati?"
+
+#: MissedCallsDlg.cpp:596
+msgid "Filter"
+msgstr "Filtro"
+
+#: MissedCallsDlg.cpp:597
+msgid "Show"
+msgstr "Mostra"
+
+#: MissedCallsDlg.cpp:598
+msgid "Phone"
+msgstr "Telefono"
+
+#: MissedCallsDlg.cpp:602
+msgid "&Call"
+msgstr "&Chiama"
+
+#: MissedCallsDlg.cpp:603
+msgid "&Add Outlook Contact"
+msgstr "&Aggiungi Contatto Outlook"
+
+#: MissedCallsDlg.cpp:604
+msgid "&Remove selection"
+msgstr "&Rimuovi selezione"
+
+#: OutlookContactsDlg.cpp:132
+#: OutlookContactsDlg.cpp:196
+#: OutlookContactsDlg.cpp:588
+#: OutlookContactsDlg.cpp:666
+msgid "Dial"
+msgstr "Chiama"
+
+#: OutlookContactsDlg.cpp:446
+#, c-format
+msgid "%d Contacts"
+msgstr "%d Contatti"
+
+#: OutlookContactsDlg.cpp:448
+#: OutlookContactsDlg.cpp:870
+msgid "Contact"
+msgstr "Contatto"
+
+#: OutlookContactsDlg.cpp:823
+#, fuzzy
+msgid "Fi&rst Name Middle Name, Last Name"
+msgstr "&Nome, Cognome"
+
+#: OutlookContactsDlg.cpp:824
+#, fuzzy
+msgid "&Last Name, First name Middle Name"
+msgstr "C&ognome, Nome"
+
+#: OutlookContactsDlg.cpp:826
+msgid "Import Contacts"
+msgstr "Importa Contatti"
+
+#: OutlookContactsDlg.cpp:827
+msgid "From Outlook"
+msgstr "Da Outlook"
+
+#: OutlookContactsDlg.cpp:828
+msgid "From CSV file"
+msgstr "Da file CSV"
+
+#: OutlookContactsDlg.cpp:842
+msgid "&Hide contacts with no telephone numbers"
+msgstr "&Nascondi contatti senza numeri telefonici"
+
+#: OutlookContactsDlg.cpp:873
+msgid "&Find"
+msgstr "&Trova"
+
+#: OutlookContactsDlg.cpp:874
+msgid "&Options"
+msgstr "&Opzioni"
+
+#: OutlookContactsDlg.cpp:875
+msgid "&Skip"
+msgstr "&Salta"
+
+#: OutlookRuleDlg.cpp:64
+msgid "Invalid prefix!"
+msgstr "Prefisso non valido!"
+
+#: OutlookRuleDlg.cpp:85
+msgid "Edit Outlook Rule"
+msgstr "Modifica regola Outlook"
+
+#: OutlookRuleDlg.cpp:87
+msgid "Add Outlook Rule"
+msgstr "Aggiungi regola Outlook"
+
+#: OutlookRuleDlg.cpp:89
+msgid "&Prefix"
+msgstr "&Prefisso"
+
+#: OutlookRuleDlg.cpp:90
+msgid "&Replace with"
+msgstr "&Sostituisci con"
+
+#: PBXClient.cpp:244
+msgid "You are not authorized to place calls from the selected extension."
+msgstr "Non sei autorizzato a originare chiamate dall'extension selezionata."
+
+#: PBXClient.cpp:392
+#, fuzzy, c-format
+msgid "%s is already running."
+msgstr "%s e' gia' in uso."
+
+#: PBXClient.cpp:404
+msgid "Incorrect version of WS2_32.dll found."
+msgstr "Rilevata versione non coretta di WS2-32.dll."
+
+#: PBXClient.cpp:613
+msgid "Please contact your administrator for technical support."
+msgstr "Per cortesia contatta il tuo amministratore per supporto tecnico"
+
+#: PBXClient.cpp:815
+#, c-format
+msgid "About %s..."
+msgstr "Informazioni su %s..."
+
+#: PBXClient.cpp:823
+msgid "Version"
+msgstr "Versione"
+
+#: SettingsDialingRules.cpp:60
+#, fuzzy
+msgid "Outgoing context"
+msgstr "Outgoing context"
+
+#: SettingsDialingRules.cpp:61
+#, fuzzy
+msgid "Outgoing prefix"
+msgstr "Outgoing prefix"
+
+#: SettingsDialingRules.cpp:62
+msgid "Strip following prefixes from incoming calls' caller id (comma separated for multiple prefixes)"
+msgstr "Rimuovi i seguenti prefissi dai caller id delle chiamate entranti (separare con virgole per prefissi multipli)"
+
+#: SettingsDialingRules.cpp:63
+#: SettingsDlg.cpp:124
+#: SettingsDlg.cpp:544
+msgid "Dialing rules"
+msgstr "Regole di chiamata"
+
+#: SettingsDlg.cpp:123
+#: SettingsDlg.cpp:542
+msgid "General"
+msgstr "Generale"
+
+#: SettingsDlg.cpp:125
+#: SettingsDlg.cpp:546
+msgid "Server"
+msgstr "Server"
+
+#: SettingsDlg.cpp:126
+#: SettingsDlg.cpp:548
+#: SettingsExtensionsDlg.cpp:252
+msgid "Extensions"
+msgstr "Extensions"
+
+#: SettingsDlg.cpp:127
+#: SettingsDlg.cpp:550
+msgid "Outlook"
+msgstr "Outlook"
+
+#: SettingsDlg.cpp:128
+#: SettingsDlg.cpp:552
+#: SettingsImportRules.cpp:208
+msgid "Outlook Import Rules"
+msgstr "Regole Importazione da Outlook"
+
+#: SettingsDlg.cpp:261
+msgid "Invalid value for server!"
+msgstr "Valore non valido per server!"
+
+#: SettingsDlg.cpp:271
+msgid "Invalid value for port!"
+msgstr "Valore non valido per porta!"
+
+#: SettingsDlg.cpp:281
+msgid "Invalid username!"
+msgstr "Username non valido!"
+
+#: SettingsDlg.cpp:307
+msgid "Invalid delay time!"
+msgstr "Tempo di attesa non valido!"
+
+#: SettingsDlg.cpp:386
+msgid "Outlook integration failed!"
+msgstr "Integrazione con Outlook fallita!"
+
+#: SettingsDlg.cpp:444
+msgid "Invalid refresh interval specified! Program will use the default value of 30 minutes."
+msgstr "Specificato un intervallo di aggiornamento non valido! Verra' utilizzato il valore predefinito di 30 minuti."
+
+#: SettingsDlg.cpp:524
+msgid "&Apply"
+msgstr "&Applica"
+
+#: SettingsDlg.cpp:525
+#, fuzzy
+msgid "Powered by:"
+msgstr "Powered by:"
+
+#: SettingsExtensionsDlg.cpp:90
+#: SettingsExtensionsDlg.cpp:94
+msgid "Extension"
+msgstr "Extension"
+
+#: SettingsExtensionsDlg.cpp:91
+#: SettingsExtensionsDlg.cpp:95
+msgid "Protocol"
+msgstr "Protocollo"
+
+#: SettingsExtensionsDlg.cpp:92
+msgid "Status"
+msgstr "Stato"
+
+#: SettingsExtensionsDlg.cpp:180
+msgid "You must be Signed In to add new extensions."
+msgstr "E' necessario essere autenticati per aggiungere nuove extension."
+
+#: SettingsExtensionsDlg.cpp:193
+msgid "You must be Signed In to edit extensions."
+msgstr "E' necessario essere autenticati per modificare le extensions."
+
+#: SettingsExtensionsDlg.cpp:253
+#: SettingsImportRules.cpp:209
+msgid "&Add"
+msgstr "&Aggiungi"
+
+#: SettingsExtensionsDlg.cpp:254
+#: SettingsImportRules.cpp:210
+msgid "&Remove"
+msgstr "&Rimuovi"
+
+#: SettingsExtensionsDlg.cpp:255
+#: SettingsImportRules.cpp:211
+msgid "&Edit"
+msgstr "&Modifica"
+
+#: SettingsGeneralDlg.cpp:134
+msgid "Default language"
+msgstr "Lingua predefinita"
+
+#: SettingsGeneralDlg.cpp:287
+msgid "Language directory could not be created."
+msgstr "Impossibile creare la cartella delle lingue."
+
+#: SettingsGeneralDlg.cpp:293
+msgid "Language file could not be copied."
+msgstr "Impossibile copiare il file della lingua."
+
+#: SettingsGeneralDlg.cpp:299
+msgid "Language was successfully added."
+msgstr "Lingua aggiunta con successo."
+
+#: SettingsGeneralDlg.cpp:307
+msgid "General settings"
+msgstr "Impostazioni generali"
+
+#: SettingsGeneralDlg.cpp:308
+msgid "Call notification dialog &delay (sec)"
+msgstr "&Durata notifica chiamate (secondi)"
+
+#: SettingsGeneralDlg.cpp:310
+#, c-format
+msgid "Start %s at Windows startup"
+msgstr "Esegui %s all'avvio di Windows"
+
+#: SettingsGeneralDlg.cpp:312
+msgid "Allow automatic Sign In when connected to the &Internet"
+msgstr "Permetti autenticazione automatica quando connesso a Internet"
+
+#: SettingsGeneralDlg.cpp:313
+msgid "Minimum CallerID length for which to display popup notification:"
+msgstr "Lunghezza minima dei CallerID per i quali mostrare il popup di notifica:"
+
+#: SettingsGeneralDlg.cpp:315
+msgid "Don't s&how this window at startup"
+msgstr "Non vis&ualizzare questa finestra all'avvio"
+
+#: SettingsGeneralDlg.cpp:317
+#: SettingsGeneralDlg.cpp:319
+msgid "Language"
+msgstr "Lingua"
+
+#: SettingsGeneralDlg.cpp:320
+msgid "Add another language"
+msgstr "Aggiungi altra lingua"
+
+#: SettingsImportRules.cpp:103
+msgid "Numbers starting with"
+msgstr "Numeri che iniziano con"
+
+#: SettingsImportRules.cpp:104
+msgid "Replace with"
+msgstr "Sostituisci con"
+
+#: SettingsImportRules.cpp:212
+msgid "&Update Database"
+msgstr "Ag&giorna Database"
+
+#: SettingsImportRules.cpp:214
+#, c-format
+msgid "NOTE: The following rules apply for Outlook Contacts' phone numbers, and for Outgoing Calls. If you change some of the rules, do not forget to update %s database."
+msgstr "NOTA: Le seguenti regole si applicano ai numeri telefonici dei Contatti Outlook e alle Chiamate In Uscita. Se una di queste regole viene modificata, aggiornare il dabase di %s."
+
+#: SettingsOutlookDlg.cpp:93
+msgid "Enable Outloo&k integration (Administrator privileges required to change this option)"
+msgstr "Abilita integrazione Outloo&k (richiesti privilegi di Amministratore per modificare questa opzione)"
+
+#: SettingsOutlookDlg.cpp:211
+msgid "Outlook settings"
+msgstr "Impostazioni Outlook"
+
+#: SettingsOutlookDlg.cpp:212
+#: SettingsOutlookDlg.cpp:220
+msgid "Contact details"
+msgstr "Dettagli Contatto"
+
+#: SettingsOutlookDlg.cpp:213
+msgid "Enable Outloo&k integration"
+msgstr "Abilita integrazione Outloo&k"
+
+#: SettingsOutlookDlg.cpp:214
+#, fuzzy
+msgid "Enable Outlook &features"
+msgstr "Abilita funzionalita' Outlook"
+
+#: SettingsOutlookDlg.cpp:215
+msgid "&Search Outlook Contacts for incoming calls"
+msgstr "&Cerca Contatti Outlook per chiamate in ingresso"
+
+#: SettingsOutlookDlg.cpp:216
+#, fuzzy
+msgid "Automatically display &New Contact Window for unknown incoming calls"
+msgstr "Mostra automaticamente la finestra &Nuovo Contatto per chiamanti sconosciuti"
+
+#: SettingsOutlookDlg.cpp:217
+msgid "R&efresh contacts interval (minutes):"
+msgstr "Inte&rvallo aggiornamento contatti (minuti):"
+
+#: SettingsOutlookDlg.cpp:218
+#, fuzzy
+msgid "Di&splay New Contact Window for non-numeric CallerID"
+msgstr "Mo&stra finestra Nuovo COntatto per CallerID non numerici"
+
+#: SettingsOutlookDlg.cpp:219
+msgid "Do not display contacts with no telephone num&bers defined"
+msgstr "Non mostrare contatti per i quali non sono definiti numeri telefonici"
+
+#: SettingsOutlookDlg.cpp:223
+msgid "Mail Profile"
+msgstr "Profilo di Posta"
+
+#: SettingsOutlookDlg.cpp:224
+msgid "Choose Mail Profile:"
+msgstr "Seleziona Profilo di Posta:"
+
+#: SettingsServerDlg.cpp:118
+msgid "Server settings"
+msgstr "Impostazioni Server"
+
+#: SettingsServerDlg.cpp:119
+msgid "&Server"
+msgstr "&Server"
+
+#: SettingsServerDlg.cpp:120
+msgid "&Username"
+msgstr "&Username"
+
+#: SettingsServerDlg.cpp:121
+msgid "&Password"
+msgstr "&Password"
+
+#: SettingsServerDlg.cpp:122
+msgid "&Port"
+msgstr "&Porta"
+
+#: SocketManager.cpp:168
+#: SocketManager.cpp:170
+msgid "Signed In"
+msgstr "Autenticato"
+
+#: SocketManager.cpp:180
+msgid "Authentication failed!"
+msgstr "Autenticazione fallita!"
+
+#: SocketManager.cpp:431
+msgid "Queue:"
+msgstr "Coda:"
+
+#: SocketManager.cpp:611
+msgid "Originate failed! Please check your extensions in Settings->Extensions, and make sure you are using the right one in the 'Dial From' select box."
+msgstr "Chiamata fallita! Cortesemente controlla le tue extension in Impostazioni->Extension, e assicurati di utilizzare quella corretta nella casella di scelta 'Chiama Da'."
+
+#: SysTray.cpp:131
+msgid "Online HTML"
+msgstr "Online HTML"
+
+#: SysTray.cpp:132
+msgid "Online PDF"
+msgstr "Online PDF"
+
+#: SysTray.cpp:133
+msgid "Contact Support"
+msgstr "Contatta il supporto"
+
+#: SysTray.cpp:135
+msgid "Help"
+msgstr "Aiuto"
+
+#: SysTray.cpp:136
+msgid "About"
+msgstr "Informazioni su"
+
+#: SysTray.cpp:139
+msgid "Place a Call"
+msgstr "Origina una chiamata"
+
+#: SysTray.cpp:147
+msgid "Add Contact"
+msgstr "Aggiungi Contatto"
+
+#: SysTray.cpp:149
+msgid "Exit"
+msgstr "Esci"
+

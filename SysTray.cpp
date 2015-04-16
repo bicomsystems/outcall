@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -110,7 +110,7 @@ void CSysTray::ShowBaloon() {
 	}
 }
 
-LRESULT CSysTray::OnSysTrayNotification(UINT wParam, LONG lParam) 
+LRESULT CSysTray::OnSysTrayNotification(WPARAM wParam, LPARAM lParam) 
 {
     if (wParam != m_notifyIconData.uID)
         return 0;

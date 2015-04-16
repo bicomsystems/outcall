@@ -99,12 +99,16 @@ void CSocketManager::AppendMessage(LPCTSTR strText )
 		return;
 
 	HWND hWnd = m_pMsgCtrl->GetSafeHwnd();
-	DWORD dwResult = 0;
 
 	if (m_pMsgCtrl->GetLineCount()>=5000) {
 		m_pMsgCtrl->SetWindowText(_T(""));
 	}
 
+#ifdef _WIN64
+	ULONG_PTR dwResult = 0;	
+#else
+	DWORD dwResult = 0;	
+#endif
 	if (SendMessageTimeout(hWnd, WM_GETTEXTLENGTH, 0, 0, SMTO_NORMAL, 1000L, &dwResult) != 0)
 	{
 		int nLen = (int) dwResult;
@@ -123,6 +127,40 @@ void CSocketManager::SetMessageWindow(CEdit* pMsgCtrl)
 {
 	m_pMsgCtrl = pMsgCtrl;
 }
+
+
+//BOOL CSocketManager::IsNumeric(const CString Str)
+//{
+//	// Make a copy of the original string to test it
+//	CString WithoutSeparator = Str;
+//	// Prepare to test for a natural number
+//	// First remove the decimal separator, if any
+//	WithoutSeparator.Replace(_T("."), _T(""));
+//
+//	// If this number were natural, test it
+//	// If it is not even a natural number, then it can't be valid
+//	if( IsNatural(WithoutSeparator) == FALSE )
+//		return FALSE; // Return Invalid Number
+//
+//	// Set a counter to 0 to counter the number of decimal separators
+//	int NumberOfSeparators = 0;
+//
+//	// Check each charcter in the original string
+//	for(int i = 0; i < Str.GetLength(); i++)
+//	{
+//		// If you find a decimal separator, count it
+//		if( Str[i] == '.' )
+//			NumberOfSeparators++;
+//	}
+//
+//	// After checking the string and counting the decimal separators
+//	// If there is more than one decimal separator,
+//	// then this cannot be a valid number
+//	if( NumberOfSeparators > 1 )
+//		return FALSE; // Return Invalid Number
+//	else // Otherwise, this appears to be a valid decimal number
+//		return TRUE;
+//}
 
 
 void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
@@ -159,6 +197,8 @@ void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
 	
 	if (!authenticated) {	
 		if (strData.Find(_T("Message: Authentication accepted"))!=-1) {
+
+			m_OutgoingCalls.clear();
 						
 			((CMainFrame*)mainFrame)->m_bSigningIn = FALSE;
 			((CMainFrame*)mainFrame)->m_bCancelSignIn = FALSE;			
@@ -190,12 +230,18 @@ void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
 				finalString = strData.Mid(nIndex, nRet-nIndex);
 
 			CString username = ::theApp.GetProfileString("Settings", "username", "");
-			//decode password from registry
-			/*std::string encoded = (LPCTSTR)(::theApp.GetProfileString("Settings", "password", ""));
-			std::string decoded = base64_decode(encoded);
-			
-			for (i=0; i<decoded.length(); i++)
-				decoded[i]-=10;*/
+
+#ifdef MULTI_TENANT
+			int protocol = ::theApp.GetProfileInt("Settings", "protocol", 0);
+			if (protocol==0)
+				internalUsername = _T("SIP/") + username;
+			else if (protocol==1)
+				internalUsername = _T("IAX2/") + username;
+			else if (protocol==2)
+				internalUsername = _T("SCCP/") + username;
+			internalUsername = internalUsername.MakeLower();
+#endif
+
 			CString password = ::theApp.DecodePassword(::theApp.GetProfileString("Settings", "password", ""));
 			finalString += password; //CString(decoded.c_str());
 			
@@ -225,20 +271,7 @@ void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
 			packetString += "\r\n";
 
             SendData(packetString);
-
-//#ifdef _UNICODE
-//			ch = ::theApp.ConvertFromUnicodeToMB(packetString);
-//			if (ch) {
-//				WriteComm((LPBYTE)ch, packetString.GetLength(), INFINITE);                
-//				free(ch);				
-//			}
-//#else            			
-//			BYTE byBuffer[512] = { 0 };
-//			int nLen = packetString.GetLength();
-//			strcpy((LPSTR)byBuffer, packetString);
-//			WriteComm(byBuffer, nLen, INFINITE);
-//#endif
-						
+					
 		}		
 	} else {
 		if (strData.Right(4)!="\r\n\r\n") {
@@ -364,7 +397,21 @@ void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
 						}
 					}
 				}
-			} else if (eventData.Find(_T("Event: Dial"))!=-1 || eventData.Find(_T("Event: AgentCalled"))!=-1) {
+			}
+			else if (eventData.Find(_T("Event: Newexten"))!=-1) {
+				map<CString, CString> map;
+				CString channel;
+				CString extension;
+				GetEventValues(eventData, map);
+				channel = map["channel"];
+				if (FindCalledExtension(channel)!="") {
+					CString number = map["extension"];
+					if (m_OutgoingCalls.find(channel)!=m_OutgoingCalls.end())
+						goto next_event;
+					m_OutgoingCalls[channel] = number;
+				}
+			}			
+			else if (eventData.Find(_T("Event: Dial"))!=-1 || eventData.Find(_T("Event: AgentCalled"))!=-1) {
                 map<CString, CString> map;
 				CString outcall_channel;
 				CString source_channel, destination_channel;
@@ -443,7 +490,15 @@ void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
 					CString query, callDate, callTime;
 					CString protocol = caller.Left(caller.Find(_T("/")));
 					FormatDateAndTime(callDate, callTime);
-					callee = callee.Mid(callee.Find(_T("/"))+1, callee.GetLength());
+
+					std::map<CString, CString>::iterator iterOutgoingCalls = m_OutgoingCalls.find(source_channel);
+					if (iterOutgoingCalls!=m_OutgoingCalls.end()) {
+						callee = iterOutgoingCalls->second;
+						m_OutgoingCalls.erase(iterOutgoingCalls);
+					} else {
+						callee = callee.Mid(callee.Find(_T("/"))+1, callee.GetLength());
+					}
+					
 					::theApp.m_OutcallChannels[source_channel] = from + "||" + callee;
 
 					from = from + "  (" + protocol + ")";
@@ -546,6 +601,7 @@ void CSocketManager::OnDataReceived(const LPBYTE lpBuffer, DWORD dwCount)
 				if (nIndex!=-1) {
 					nRet = eventData.Find(_T("\r\n"), nIndex+8);
 					channel = eventData.Mid(nIndex+9, nRet-nIndex-9);
+					m_OutgoingCalls.erase(channel);
                     for (iter=m_MissedCalls.begin(); iter != m_MissedCalls.end(); iter++) {
 						if (iter->first==channel) {
 							InsertCallIntoDB(channel,1);
@@ -674,6 +730,13 @@ void CSocketManager::OnEvent(UINT uEvent)
 
 
 CString CSocketManager::FindCalledExtension(CString calleeID) {
+#ifdef MULTI_TENANT
+	calleeID=calleeID.MakeLower();
+	if (calleeID==internalUsername)
+		return internalUsername.Mid(internalUsername.Find(_T("/"))+4, internalUsername.GetLength());
+	else
+		return "";
+#else
 	HKEY hKey = HKEY_CURRENT_USER;
 	CString sKeyName = REG_KEY_EXTENSIONS;
 	CString ret;
@@ -684,8 +747,11 @@ CString CSocketManager::FindCalledExtension(CString calleeID) {
 	TCHAR str[MAX_REG_KEY_NAME];
 	CString user, pass, val;
 	memset( str, '\0', sizeof(str));
-
+	
+	int nPosition;
 	calleeID.MakeLower();
+	if ((nPosition=calleeID.ReverseFind('-'))!=-1)
+		calleeID = calleeID.Left(nPosition);	
 	
 	retcode = RegOpenKeyEx(hKey, (LPCTSTR)sKeyName, 0, KEY_READ, &hOpenKey);
 	
@@ -789,6 +855,7 @@ next:
 		return ret;
 	else
 		return "";
+#endif
 }
 
 
@@ -920,18 +987,11 @@ void CSocketManager::StripCallerID(CString &cid1, CString &cid2) {
 void CSocketManager::SendData(CString data) {		
 #ifdef _UNICODE
 	CStringA ansi(data);
-	WriteComm((LPBYTE)ansi.GetBuffer(), ansi.GetLength(), INFINITE);
-	/*char *ch = ::theApp.ConvertFromUnicodeToMB(data);
-	if (ch) {
-		WriteComm((LPBYTE)ch, strlen(ch), INFINITE);
-		free(ch);
-	}*/
+	DWORD written = WriteComm((LPBYTE)ansi.GetBuffer(), ansi.GetLength(), INFINITE);
+	if (written<=0) {
+		DBG_LOG("Failed socket write.");
+	}
 #else            	
 	WriteComm((LPBYTE)data.GetBuffer(), data.GetLength(), INFINITE);
-	/*int nLen = data.GetLength();
-	BYTE *buffer = new BYTE[nLen+1];	 
-	strcpy((LPSTR)buffer, data);
-	WriteComm(buffer, nLen, INFINITE);
-	delete buffer;*/
 #endif	
 }

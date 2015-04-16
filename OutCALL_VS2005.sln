@@ -1,0 +1,55 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OutCALL", "PBXClient.vcproj", "{1497543C-6D5D-4A08-9DE5-DC03940839CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OutlookAddin", "OutlookAddin\OutlookAddin.vcproj", "{8946A107-FE49-4A8F-A107-24DF5D337D76}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug - Free|Win32 = Debug - Free|Win32
+		Debug|Win32 = Debug|Win32
+		denis|Win32 = denis|Win32
+		Free - Debug|Win32 = Free - Debug|Win32
+		MT Debug|Win32 = MT Debug|Win32
+		MT Release|Win32 = MT Release|Win32
+		Release - Free|Win32 = Release - Free|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug - Free|Win32.ActiveCfg = Debug - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug - Free|Win32.Build.0 = Debug - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Debug|Win32.Build.0 = Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.denis|Win32.ActiveCfg = denis|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.denis|Win32.Build.0 = denis|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Free - Debug|Win32.ActiveCfg = Free - Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Free - Debug|Win32.Build.0 = Free - Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.MT Debug|Win32.ActiveCfg = MT Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.MT Debug|Win32.Build.0 = MT Debug|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.MT Release|Win32.ActiveCfg = MT Release|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.MT Release|Win32.Build.0 = MT Release|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release - Free|Win32.ActiveCfg = Release - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release - Free|Win32.Build.0 = Release - Free|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release|Win32.ActiveCfg = Release|Win32
+		{1497543C-6D5D-4A08-9DE5-DC03940839CF}.Release|Win32.Build.0 = Release|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Debug - Free|Win32.ActiveCfg = Debug - Free|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Debug - Free|Win32.Build.0 = Debug - Free|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Debug|Win32.Build.0 = Debug|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.denis|Win32.ActiveCfg = denis|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.denis|Win32.Build.0 = denis|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Free - Debug|Win32.ActiveCfg = Free - Debug|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Free - Debug|Win32.Build.0 = Free - Debug|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.MT Debug|Win32.ActiveCfg = MT Debug|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.MT Debug|Win32.Build.0 = MT Debug|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.MT Release|Win32.ActiveCfg = MT Release|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.MT Release|Win32.Build.0 = MT Release|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Release - Free|Win32.ActiveCfg = Release - Free|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Release - Free|Win32.Build.0 = Release - Free|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Release|Win32.ActiveCfg = Release|Win32
+		{8946A107-FE49-4A8F-A107-24DF5D337D76}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

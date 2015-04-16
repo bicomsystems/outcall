@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -132,9 +132,11 @@ void CSettingsOutlookDlg::LoadSettings() {
 	((CMainFrame*)::theApp.m_pMainWnd)->LoadProfileDetails(MailProfiles, nDefault, true);
 	CString CurrentMailProfile = pApp->GetProfileString("Settings", "MailProfile", "");
 
-	if (MailProfiles.size()>0) {
+	/*if (MailProfiles.size()>0) {
         m_cboMailProfile.InsertString(0, MailProfiles[0]);
-	}
+	}*/
+	m_cboMailProfile.InsertString(0, _T("Default"));
+
 	if (CurrentMailProfile!="" && m_cboMailProfile.FindString(0,CurrentMailProfile)==-1) {
 		m_cboMailProfile.AddString(CurrentMailProfile);
 		m_cboMailProfile.SelectString(0, CurrentMailProfile);

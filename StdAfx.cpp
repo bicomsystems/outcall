@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -80,3 +80,16 @@
 		}
 	}
 #endif
+
+bool IsNumeric(const char *p)
+{
+	for ( ; *p; p++)
+		if (*p < '0' || *p > '9')
+			return false;
+	return true;
+}
+
+CString EscapeSQLString(CString s) {
+	s.Replace(L"'", L"''");
+	return s;
+}

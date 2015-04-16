@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -56,6 +56,7 @@ CSettingsServerDlg::~CSettingsServerDlg()
 void CSettingsServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_COMBO_PROTOCOL, m_protocol);
 }
 
 
@@ -74,7 +75,7 @@ void CSettingsServerDlg::LoadSettings() {
 	value = pApp->GetProfileString("Settings", "server", "");
 	this->SetDlgItemText(IDC_EDIT_SERVER, value);
 
-	value = pApp->GetProfileString("Settings", "port", "5038");
+	value = pApp->GetProfileString("Settings", "port", DEFAULT_PORT);
 	this->SetDlgItemText(IDC_EDIT_PORT, value);
 	
 	value = pApp->GetProfileString("Settings", "username", "");		
@@ -82,6 +83,18 @@ void CSettingsServerDlg::LoadSettings() {
 
 	value = pApp->GetProfileString("Settings", "password", "");
 	this->SetDlgItemText(IDC_EDIT_PASSWORD, ::theApp.DecodePassword(value));
+
+#ifdef MULTI_TENANT
+	m_protocol.AddString(_T("SIP"));
+    m_protocol.AddString(_T("IAX"));
+	//m_protocol.AddString(_T("SCCP"));
+	int protocol = pApp->GetProfileInt("Settings", "protocol", 0);
+	if (protocol>1) {
+		pApp->WriteProfileInt("Settings", "protocol", 0);
+		protocol=0;
+	}
+	m_protocol.SetCurSel(protocol);
+#endif
 }
 
 
@@ -117,7 +130,20 @@ void CSettingsServerDlg::LoadSettings() {
 void CSettingsServerDlg::InitLocaleGUI() {
 	GetDlgItem(IDC_STATIC_GROUP)->SetWindowText(_("Server settings"));
     GetDlgItem(IDC_STATIC_SERVER)->SetWindowText(_("&Server") + CString(":"));
+
+#ifdef MULTI_TENANT
+	GetDlgItem(IDC_STATIC_USERNAME)->SetWindowText(_("&Extension") + CString(":"));
+	GetDlgItem(IDC_STATIC_PASSWORD)->SetWindowText(_("&Secret") + CString(":"));
+#else
 	GetDlgItem(IDC_STATIC_USERNAME)->SetWindowText(_("&Username") + CString(":"));
-	GetDlgItem(IDC_STATIC_PASSWORD)->SetWindowText(_("&Password") + CString(":"));
+	GetDlgItem(IDC_STATIC_PASSWORD)->SetWindowText(_("&Password") + CString(":"));	
+#endif
+
 	GetDlgItem(IDC_STATIC_PORT)->SetWindowText(_("&Port") + CString(":"));
+	GetDlgItem(IDC_STATIC_PROTOCOL)->SetWindowText(CString(_("&Protocol")) + ":");
+
+#ifndef MULTI_TENANT
+	GetDlgItem(IDC_STATIC_PROTOCOL)->ShowWindow(FALSE);
+	GetDlgItem(IDC_COMBO_PROTOCOL)->ShowWindow(FALSE);
+#endif
 }

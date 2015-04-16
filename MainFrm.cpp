@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -70,6 +70,7 @@ TCHAR* ORIGINATE_FILE_MUTEX = _T("Originate mutex");
 void LoadFolder(MAPIFolderPtr pFolder, CppSQLite3DB *db);
 
 CMAPIEx gMapiEx;
+CMainFrame *g_pMainWindow = NULL;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -110,6 +111,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_TASKBARNOTIFIERCLICKED, OnCallNotifyDialogClick)
 	ON_MESSAGE(NEW_CALL_MESSAGE, OnNewCallMsg)
 	ON_MESSAGE(WM_AUTHENTICATE, OnAuthenticateMsg)
+	ON_MESSAGE(WM_RELOAD_OUTLOOK_CONTACTS, OnReloadOutlookContactsMsg)
 	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
 	
@@ -120,6 +122,7 @@ END_MESSAGE_MAP()
 
 CMainFrame::CMainFrame()
 {
+	g_pMainWindow = this;
 	m_bSignOutMessageBoxActive = FALSE;
 	m_socketManager.authenticated = FALSE;
 	//m_SignInMenuItemData = 0;
@@ -163,7 +166,6 @@ void CMainFrame::CreateDatabaseTable(CString table, CString fields) {
 		db.execDML(fields.GetBuffer());	
 	} catch (CppSQLite3Exception& e) { }
 }
-
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -264,10 +266,6 @@ void CMainFrame::OnDestroy()
 	CFrameWnd::OnDestroy();
 	if ((m_socketManager.IsOpen()) && (m_socketManager.authenticated)) {		
 		CString packetString="Action: Logoff";
-		/*int nLen = packetString.GetLength();
-		BYTE byBuffer[512] = { 0 };	
-		strcpy((LPSTR)byBuffer, packetString);			
-		m_socketManager.WriteComm(byBuffer, nLen, INFINITE);		*/
 		m_socketManager.SendData(packetString);
 	}	
 	m_socketManager.StopComm();	
@@ -281,8 +279,7 @@ void CMainFrame::OnPaint()
 
 
 BOOL CMainFrame::Init()
-{
-
+{	
 	// Create the Tray Icon.
 	UINT iconID;
 	CString toolTipText;
@@ -361,24 +358,25 @@ BOOL CMainFrame::DisplayWindow(BOOL bShow)
 
 
 void CMainFrame::OnFileAddContact() {
-	try
-		{					
-			_ApplicationPtr pApp; //Outlook Application Instance
-			pApp.CreateInstance(__uuidof(Application));
-			IDispatchPtr contactPtr;
-			_ContactItemPtr cItem;
+	AfxBeginThread(AddNewOutlookContactThreadProc, NULL);
+	//try
+	//	{					
+	//		_ApplicationPtr pApp; //Outlook Application Instance
+	//		pApp.CreateInstance(__uuidof(Application));
+	//		IDispatchPtr contactPtr;
+	//		_ContactItemPtr cItem;
 
-			contactPtr = pApp->CreateItem(olContactItem);
-			if (contactPtr!=NULL) {
-				cItem = (_ContactItemPtr)contactPtr;
-				cItem->Display();
-			}						
-			pApp.Release();			
-		}		
-		catch(_com_error &e)
-		{
-			TRACE((char*)e.Description());
-		}	
+	//		contactPtr = pApp->CreateItem(olContactItem);
+	//		if (contactPtr!=NULL) {
+	//			cItem = (_ContactItemPtr)contactPtr;
+	//			cItem->Display();
+	//		}						
+	//		pApp.Release();			
+	//	}		
+	//	catch(_com_error &e)
+	//	{
+	//		TRACE((char*)e.Description());
+	//	}	
 }
 
 void CMainFrame::OnFileSettings()
@@ -420,10 +418,6 @@ void CMainFrame::OnFileConnect()
 				}
 				m_bSignOutMessageBoxActive = FALSE;
 				CString packetString="Action: Logoff";
-				/*int nLen = packetString.GetLength();
-				BYTE byBuffer[512] = { 0 };	
-				strcpy((LPSTR)byBuffer, packetString);			
-				m_socketManager.WriteComm(byBuffer, nLen, INFINITE);*/
 				m_socketManager.SendData(packetString);
 			}
 			m_socketManager.m_bManualSignOut = TRUE;
@@ -440,10 +434,6 @@ void CMainFrame::SignOut() {
 	if ((m_bSigningIn==FALSE) && (m_socketManager.IsOpen())) {			
 		if (m_socketManager.authenticated) {
 			CString packetString="Action: Logoff";
-			/*int nLen = packetString.GetLength();
-			BYTE byBuffer[512] = { 0 };	
-			strcpy((LPSTR)byBuffer, packetString);			
-			m_socketManager.WriteComm(byBuffer, nLen, INFINITE);*/
 			m_socketManager.SendData(packetString);
 		}
 		m_socketManager.m_bManualSignOut = TRUE;
@@ -481,10 +471,6 @@ LRESULT CMainFrame::OnAuthenticateMsg(WPARAM wParam, LPARAM lParam) {
 	packetString += "\r\n";	
 	
 	if (m_socketManager.WatchComm()) {
-		/*BYTE byBuffer[512] = { 0 };				
-		int nLen = packetString.GetLength();		
-		strcpy((LPSTR)byBuffer, packetString);
-		m_socketManager.WriteComm(byBuffer, nLen, INFINITE);*/
 		m_socketManager.SendData(packetString);
 	} else {
 		m_bSigningIn = FALSE;
@@ -506,7 +492,7 @@ UINT ConnectThreadProc( LPVOID pParam )
     CMainFrame* pMainFrame = (CMainFrame*)pParam;
 	CPBXClientApp* pApp = (CPBXClientApp*)AfxGetApp();
 	CString server = pApp->GetProfileString("Settings", "server", "");
-	CString port = pApp->GetProfileString("Settings", "port", "5038");
+	CString port = pApp->GetProfileString("Settings", "port", DEFAULT_PORT);
 	long err;
     BOOL bAuthenticate = FALSE;
 
@@ -643,7 +629,7 @@ void CMainFrame::OnFileCall()
 	if (::theApp.GetProfileInt("Settings", "OutlookFeatures", 1)!=1) {
 		dlg.m_LoadContacts=FALSE;
 	}
-	dlg.DoModal();	
+	dlg.DoModal();
 }
 
 void CMainFrame::OnUpdateFileConnect(CCmdUI* pCmdUI)
@@ -860,18 +846,101 @@ BOOL CMainFrame::DisplayContact(MAPIFolderPtr pFolder, CString fullName) {
 	return FALSE;
 }
 
+LRESULT CMainFrame::OnReloadOutlookContactsMsg(WPARAM wParam, LPARAM lParam) {
+	LoadOutlookContacts(FALSE);
+	return 1;
+}
 
+/** This is thread which will display Outlook's New Contact window,
+	and reload Outlook contacts after the window is closed **/
+
+UINT AddNewOutlookContactThreadProc( LPVOID pParam ) {
+	CString name;
+	CString number;
+
+	if (pParam) {
+		CString *contact_info = (CString*)pParam;
+		std::vector<CString> info;
+		SplitString(*contact_info, "###", info);
+		delete contact_info;
+
+		name = info[0];
+		if (info.size()>=2) {			
+			number = info[1];
+		}
+	}	
+
+	DBG_LOG("---------- BEGIN OCW ----------");
+
+	_ApplicationPtr pApp;
+	HRESULT hres=CoInitialize(NULL); // CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	if (FAILED(hres)) {
+		CStringA msg;
+		msg.Format("Outlook contact window could not be opened. Failed to initialize COM library. Error code = %X", hres);
+		DBG_LOG(msg);
+		DBG_LOG("---------- END OCW ----------");
+		return 0;
+	}
+	
+	hres = pApp.CreateInstance(__uuidof(Application)); // WideString("Outlook.Application").data());
+	if (FAILED(hres)) {
+		CoUninitialize();
+		CStringA msg;
+		msg.Format("Outlook contact window could not be opened. Failed to create Outlook Instance. Error code = %X", hres);
+		DBG_LOG(msg);
+		DBG_LOG("---------- END OCW ----------");
+		return 0;
+	}
+
+	try {
+		LPDISPATCH contactPtr;
+		_ContactItemPtr cItem = pApp->CreateItem(olContactItem);
+		//contactPtr = (LPDISPATCH)pApp->CreateItem(olContactItem);
+		if (cItem!=NULL) {
+			// Fixes bugs in Outlook when called using COM, we must create a temp Outlook window and close it
+			// If not, contact will not be created correctly (known to work on Outlook 2007)
+			//cItem = (_ContactItemPtr)contactPtr;
+			cItem->Display();
+			cItem->Close(olDiscard);
+			cItem = (LPDISPATCH)pApp->CreateItem(olContactItem);
+
+			if (cItem!=NULL) {
+				//cItem = (_ContactItemPtr)contactPtr;
+				cItem->put_FullName(name.AllocSysString());
+				cItem->put_BusinessTelephoneNumber(number.AllocSysString());
+				cItem->Display(TRUE);
+				PostMessage(g_pMainWindow->GetSafeHwnd(), WM_RELOAD_OUTLOOK_CONTACTS, 0, 0);
+				//cItem->Release();
+			} else {
+                DBG_LOG("Failed to create Outlook Contact #2");
+            }
+		} else {
+			DBG_LOG("Failed to create Outlook Contact #1");
+		}
+	} catch (...) {
+		DBG_LOG("Exception raised.");
+	}
+
+	pApp.Release();
+	CoUninitialize();
+
+	DBG_LOG("---------- END OCW ----------");
+
+	return 0;
+}
 
 void CMainFrame::OpenContact(CTaskbarNotifier *notifyWnd) {
 	if (notifyWnd->callNotification) {
 		try
 		{					
-			_ApplicationPtr pApp; //Outlook Application Instance
-			pApp.CreateInstance(__uuidof(Application));
-			IDispatchPtr contactPtr;
-			_ContactItemPtr cItem;
-								
 			if (notifyWnd->contactExists) {
+				// open existing contact in Outlook
+
+				_ApplicationPtr pApp; //Outlook Application Instance
+				pApp.CreateInstance(__uuidof(Application));
+				IDispatchPtr contactPtr;
+				_ContactItemPtr cItem;
+
 				_FoldersPtr folders = pApp->GetNamespace(_bstr_t("MAPI"))->GetFolders();
 				MAPIFolderPtr pFolder = folders->GetFirst(); //Personal folders (root folder)
 				//fullName is like: "Name Surname  (phone)"
@@ -880,59 +949,14 @@ void CMainFrame::OpenContact(CTaskbarNotifier *notifyWnd) {
 				if (nIndex!=-1)
 					fullName = fullName.Left(nIndex-2);				
 				DisplayContact(pFolder, fullName);
-			} else {	
+			} else {
+				// Display "New Contact" window in Outlook
 				CString callerID1 = notifyWnd->callerID1;
 				CString callerID2 = notifyWnd->callerID2;
 
-				bool bCID1Numeric=true, bCID2Numeric=true;	
-
-				if (callerID1=="") {
-					bCID1Numeric=false;
-				} else {
-					for (int i=0; i<callerID1.GetLength(); i++) {
-						if ((callerID1[i]>=48 && callerID1[i]<=57) || callerID1[i]=='+') {
-							continue;
-						} else {
-							bCID1Numeric=false;						
-							break;
-						}
-					}
-				}
-
-				if (callerID2=="") {
-					bCID2Numeric=false;
-				} else {
-					for (int i=0; i<callerID2.GetLength(); i++) {
-						if ((callerID2[i]>=48 && callerID2[i]<=57) || callerID2[i]=='+') {
-							continue;
-						} else {
-							bCID2Numeric=false;
-							break;
-						}
-					}
-				}
-				
-				contactPtr = pApp->CreateItem(olContactItem);
-				if (contactPtr!=NULL) {
-					cItem = (_ContactItemPtr)contactPtr;
-					if (bCID1Numeric)
-						cItem->put_BusinessTelephoneNumber(callerID1.AllocSysString());
-					else
-						cItem->put_FullName(callerID1.AllocSysString());
-
-					if (bCID2Numeric) {
-						if (bCID1Numeric)
-							cItem->put_HomeTelephoneNumber(callerID2.AllocSysString());
-                        else
-                            cItem->put_BusinessTelephoneNumber(callerID2.AllocSysString());
-					} else if (bCID1Numeric) {
-						cItem->put_FullName(callerID2.AllocSysString());
-					}					
-									
-					cItem->Display();	
-				}
-			}
-			pApp.Release();
+				CString *info = new CString(callerID2 + "###" + callerID1);
+				AfxBeginThread(AddNewOutlookContactThreadProc, info);
+			}			
 		}		
 		catch(_com_error &e)
 		{
@@ -940,8 +964,6 @@ void CMainFrame::OpenContact(CTaskbarNotifier *notifyWnd) {
 		}
 	}
 }
-
-
 
 void CMainFrame::ShowNotificationDialog(CString message) {	
 	CString callerID1 = m_socketManager.callerID1;
@@ -1158,8 +1180,11 @@ CString CMainFrame::FindContact(CString callerID1, CString callerID2, CString &c
 }
 
 
-
-void CMainFrame::OnTimer(UINT nIDEvent) 
+#ifdef _WIN64
+void CMainFrame::OnTimer(UINT_PTR nIDEvent)
+#else
+void CMainFrame::OnTimer(UINT nIDEvent)
+#endif
 {
 	// TODO: Add your message handler code here and/or call default		
 	if (nIDEvent==TIMER_CONNECTING) {
@@ -1286,7 +1311,7 @@ void CMainFrame::OnFileMissedCalls() {
 }
 
 void CMainFrame::OnFileRefreshContactsFromOutlook() {
-	LoadOutlookContacts(NULL);	
+	LoadOutlookContacts(NULL);
 }
 
 void CMainFrame::LoadOutlookContacts(BOOL bDeleteExistingContacts/*if this parameter is NULL, load from Outlook, otherwise load from CSV*/) {
@@ -1357,18 +1382,18 @@ UINT RefreshContactsProc( LPVOID pParam ) {
 
 	if (pParam==NULL) { // Load from Outlook directly
 				
-		if(!CMAPIEx::Init() || !gMapiEx.Login() || !gMapiEx.OpenMessageStore()) {
+		if (!gMapiEx.Login()) { // initialize MAPI session
+			gMapiEx.Logout();
 			DBG_LOG("Failed to initialize MAPI");
 			MessageBox(NULL, _("Failed to initialize MAPI!"), APP_NAME, MB_ICONERROR);
             ::theApp.m_bLoadingContacts = FALSE;	
 			return 0;
 		}
-
+		
 		gMapiEx.LoadOutlookContacts();
 		::theApp.WriteProfileInt("Settings", "ContactsLoaded", 1);
 
-		gMapiEx.Logout();
-		CMAPIEx::Term();		
+		gMapiEx.Logout(); // close MAPI session
 	} else {
 		CFileDialog OpenDlg(1, 0, 0, OFN_FILEMUSTEXIST| OFN_HIDEREADONLY, _T("CSV Files (*.csv)|*.csv||"));
 

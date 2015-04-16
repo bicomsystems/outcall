@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -150,10 +150,7 @@ void CFindContactDlg::OnBnClickedDial()
 		((CMainFrame*)(::theApp.m_pMainWnd))->m_socketManager.SendData(packetString);
 	}
     
-	/*if (((CMainFrame*)(::theApp.m_pMainWnd))->m_socketManager.WriteComm(byBuffer, nLen, INFINITE) <= 0) {		
-		MessageBox(_("Some error ocurred while trying to place the call! Try again."), APP_NAME, MB_OK | MB_ICONERROR);	
-		m_btnDial.EnableWindow(1);
-	}*/
+	
 }
 
 
@@ -214,6 +211,10 @@ void CFindContactDlg::Search() {
 
 			fullName += (" " + CString(q.fieldValue(4)));
 			fullName = fullName.TrimLeft();
+
+			if (fullName=="") {
+				fullName = q.fieldValue(5);
+			}
 
 			for (int i=0; i<=18; i++) {
 				number = q.fieldValue(i+6);

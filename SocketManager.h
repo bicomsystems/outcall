@@ -85,6 +85,10 @@ public:
 
 	CString FindCalledExtension(CString calleeID);
 
+#ifdef MULTI_TENANT
+	CString internalUsername;
+#endif
+
 private:
 
 	BOOL m_AppendData;
@@ -94,6 +98,9 @@ private:
 
 	void GetEventValues(CString eventData, map<CString, CString> &ret);	
 	void StripCallerID(CString &cid1, CString &cid2);
+
+	//BOOL IsNumeric(const CString Str);
+	map<CString, CString> m_OutgoingCalls; // channel -> dialled number
 
 };
 

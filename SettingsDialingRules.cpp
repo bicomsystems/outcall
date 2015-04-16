@@ -61,5 +61,10 @@ void CSettingsDialingRules::InitLocaleGUI() {
 	GetDlgItem(IDC_STATIC_OUTGOING_PREFIX)->SetWindowText(_("Outgoing prefix") + CString(":"));
 	GetDlgItem(IDC_STATIC_STRIP)->SetWindowText(_("Strip following prefixes from incoming calls' caller id (comma separated for multiple prefixes)") + CString(":"));
 	GetDlgItem(IDC_STATIC_GROUP)->SetWindowText(_("Dialing rules"));
+
+#ifdef MULTI_TENANT
+	GetDlgItem(IDC_STATIC_STRIP)->ShowWindow(FALSE);
+	GetDlgItem(IDC_EDIT_STRIP_OPTIONS)->ShowWindow(FALSE);
+#endif
 }
 

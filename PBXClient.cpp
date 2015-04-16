@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -237,6 +237,46 @@ CString CPBXClientApp::DecodePassword(CString in) {
 CString CPBXClientApp::BuildOriginateCommand(CString channel, CString numberToDial, CString callerid, 
 	CString additional_options, CString context) {
 
+#ifdef MULTI_TENANT
+	CString username = ::theApp.GetProfileString("Settings", "username", "");
+	CString tenantPrefix = username.Left(3);
+	callerid = username.Mid(3, username.GetLength());
+	int protocol = ::theApp.GetProfileInt("Settings", "protocol", 0);
+	if (protocol==0)
+		channel = _T("SIP/") + username;
+	else if (protocol==1)
+		channel = _T("IAX2/") + username;
+	else if (protocol==2)
+		channel = _T("SCCP/") + username; 	
+
+	/*** First check if we are authorized ***/
+	if (AUTH_ENABLED) {
+		CString ret = ((CMainFrame*)m_pMainWnd)->m_socketManager.FindCalledExtension(channel);
+		if (ret=="") {
+			MessageBox(NULL, _("You are not authorized to place calls from the selected extension."), APP_NAME, MB_ICONINFORMATION);
+			return _T("");
+		}
+	}
+
+	CString result;
+	
+	FormatOutgoingNumber(numberToDial);
+
+	CString outgoing_prefix = GetProfileString("Settings", "OutgoingPrefix", "");
+	if (outgoing_prefix!="")
+		numberToDial = outgoing_prefix + numberToDial;
+
+    result = "Action: Originate\r\n";
+	result += "Channel: " + channel + "\r\n";
+	result += "Exten: " + numberToDial + "\r\n";	
+	result += "Context: t-" + tenantPrefix + "\r\n";
+	result += "Priority: 1\r\n";
+	result += "CallerID: " + callerid + "\r\n";
+	if (additional_options!="")
+		result += additional_options + "\r\n";
+	result += "\r\n";
+
+#else
 	/*** First check if we are authorized ***/
 	if (AUTH_ENABLED) {
 		CString ret = ((CMainFrame*)m_pMainWnd)->m_socketManager.FindCalledExtension(channel);
@@ -268,6 +308,7 @@ CString CPBXClientApp::BuildOriginateCommand(CString channel, CString numberToDi
 	if (additional_options!="")
 		result += additional_options + "\r\n";
 	result += "\r\n";
+#endif
 
 	return result;
 }
@@ -820,7 +861,12 @@ void CAboutDlg::InitLocaleGUI() {
 	if (sBuild.GetLength()<2)
 		sBuild = "0" + sBuild;
 		
+#ifdef MULTI_TENANT
+	m_version.SetWindowText(CString(APP_NAME) + ", " + _("Version") + " 1." + sBuild + " (MT Edition)");
+#else
 	m_version.SetWindowText(CString(APP_NAME) + ", " + _("Version") + " 1." + sBuild);
+#endif
+
 }
 
 

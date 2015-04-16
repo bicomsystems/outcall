@@ -85,7 +85,11 @@ public:
 	afx_msg LRESULT OnMouseLeave(WPARAM w, LPARAM l);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
+#ifdef _WIN64
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+#else
 	afx_msg void OnTimer(UINT nIDEvent);
+#endif
 };
 
 

@@ -21,6 +21,9 @@
 
 #include <edk.h>
 
+#define MDB_ONLINE ((ULONG) 0x00000100)
+#define MAPI_CACHE_ONLY ((ULONG) 0x00004000)
+
 using namespace std;
 
 #ifdef UNICODE
@@ -30,11 +33,11 @@ int CMAPIEx::cm_nMAPICode=0;
 #endif
 
 CMAPIEx::CMAPIEx()
-{
+{	
 	m_pSession=NULL;
 	m_pMsgStore=NULL;
 	m_pFolder=NULL;
-	m_pContents=NULL;
+	m_pContents=NULL;	
 }
 
 CMAPIEx::~CMAPIEx()
@@ -61,33 +64,16 @@ void CMAPIEx::Term()
 
 BOOL CMAPIEx::Login()
 {
+	if (m_pSession) {
+		return true; // already initialized MAPI session
+	}
+
 	CString profile = ::theApp.GetProfileString("Settings", "MailProfile", "");
-	HRESULT hRes;	
+	HRESULT hRes;
 
-	/*vector<CString> vProfiles;
-	int nDefault = -1;
-	LoadProfileDetails(vProfiles, nDefault, false);
-
-	if (profile=="") {
-		if (vProfiles.size()>0) {
-			if (nDefault!=-1) {
-				profile = vProfiles[nDefault];
-			} else {
-				profile = vProfiles[0];
-			}
-		}
-	} else {
-		bool bFound = false;
-		for (int i=0; i < vProfiles.size(); i++) {
-			if (profile==vProfiles[i]) {
-				bFound = true;
-				break;
-			}
-		}
-		if (bFound==false) {
-			profile = "";
-		}
-	}*/
+	if(MAPIInitialize(NULL)!=S_OK) {
+		return FALSE;
+	}	
 
 	if (profile=="") {
 		DBG_LOG("Using system default Mail profile");
@@ -97,30 +83,45 @@ BOOL CMAPIEx::Login()
 	}
 
 	//// logon to MAPI for extracting the address book. This can also be used to open the individual mail boxes.
-	if (profile!="") {
+	if (profile!="" && profile!="Default" && profile!="default") {
         TCHAR prof[100];
         _tcscpy(prof, profile);
 #ifdef _UNICODE
-		hRes = MAPILogonEx(NULL, prof, NULL, MAPI_EXTENDED |
-		MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE | MAPI_UNICODE,&m_pSession);
+		hRes = MAPILogonEx(NULL, prof, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION | MAPI_NO_MAIL | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE | MAPI_UNICODE, &m_pSession);
 #else
-        hRes = MAPILogonEx(NULL, prof, NULL, MAPI_EXTENDED |
-		MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE,&m_pSession);
+        hRes = MAPILogonEx(NULL, prof, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION | MAPI_NO_MAIL | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE, &m_pSession);
 #endif
 	} else {
-		hRes = MAPILogonEx (NULL, NULL, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION |
-		MAPI_USE_DEFAULT ,&m_pSession);
+#ifdef _UNICODE
+		hRes = MAPILogonEx (NULL, NULL, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION | MAPI_NO_MAIL | MAPI_USE_DEFAULT | MAPI_UNICODE, &m_pSession);
+#else
+		hRes = MAPILogonEx (NULL, NULL, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION | MAPI_NO_MAIL | MAPI_USE_DEFAULT, &m_pSession);
+#endif
 	}
 
-	return (hRes==S_OK);
+	if (hRes!=S_OK) {
+		m_pSession = NULL;
+		return false;
+	} else {
+		return OpenMessageStore();
+	}
 }
 
 void CMAPIEx::Logout()
 {
 	RELEASE(m_pContents);
+	m_pContents = NULL;
 	RELEASE(m_pFolder);
+	m_pFolder = NULL;
 	RELEASE(m_pMsgStore);
+	m_pMsgStore = NULL;
+	if (m_pSession) {
+		m_pSession->Logoff(NULL, MAPI_LOGOFF_UI, 0);
+	}
 	RELEASE(m_pSession);
+	m_pSession = NULL;
+
+	MAPIUninitialize();
 }
 
 BOOL CMAPIEx::OpenMessageStore(LPCTSTR szStore,ULONG ulFlags)
@@ -156,7 +157,7 @@ BOOL CMAPIEx::OpenMessageStore(LPCTSTR szStore,ULONG ulFlags)
 			}
 			if(bResult) {
 				RELEASE(m_pMsgStore);
-				bResult=(m_pSession->OpenMsgStore(NULL,pRows->aRow[0].lpProps[1].Value.bin.cb,(ENTRYID*)pRows->aRow[0].lpProps[1].Value.bin.lpb,NULL,MDB_NO_DIALOG | MAPI_BEST_ACCESS,&m_pMsgStore)==S_OK);
+				bResult=(m_pSession->OpenMsgStore(NULL,pRows->aRow[0].lpProps[1].Value.bin.cb,(ENTRYID*)pRows->aRow[0].lpProps[1].Value.bin.lpb,NULL,MDB_NO_DIALOG | MAPI_BEST_ACCESS/* | MAPI_CACHE_ONLY*/,&m_pMsgStore)==S_OK);
 				FreeProws(pRows);
 			}
 		}
@@ -176,7 +177,12 @@ LPMAPIFOLDER CMAPIEx::OpenFolder(unsigned long ulFolderID,BOOL bInternal)
 	LPMAPIFOLDER pFolder;
 
 	if(m_pMsgStore->GetProps((LPSPropTagArray) rgTags, cm_nMAPICode, &cValues, &props)!=S_OK) return NULL;
-	m_pMsgStore->OpenEntry(props[0].Value.bin.cb,(LPENTRYID)props[0].Value.bin.lpb, NULL, m_ulMDBFlags, &dwObjType,(LPUNKNOWN*)&pFolder);
+	HRESULT hRes = m_pMsgStore->OpenEntry(props[0].Value.bin.cb,(LPENTRYID)props[0].Value.bin.lpb, NULL, m_ulMDBFlags, &dwObjType,(LPUNKNOWN*)&pFolder);
+	if (FAILED(hRes)) {
+		CStringA msg;
+		msg.Format("OpenEntry failed. Error code: 0x%x", hRes);
+        DBG_LOG(msg);
+	}
 	MAPIFreeBuffer(props);
 
 	if(pFolder && bInternal) {
@@ -198,7 +204,12 @@ LPMAPIFOLDER CMAPIEx::OpenSpecialFolder(unsigned long ulFolderID,BOOL bInternal)
 	LPMAPIFOLDER pFolder;
 
 	if(pInbox->GetProps((LPSPropTagArray) rgTags, cm_nMAPICode, &cValues, &props)!=S_OK) return NULL;
-	m_pMsgStore->OpenEntry(props[0].Value.bin.cb,(LPENTRYID)props[0].Value.bin.lpb, NULL, m_ulMDBFlags, &dwObjType,(LPUNKNOWN*)&pFolder);
+	HRESULT hRes = m_pMsgStore->OpenEntry(props[0].Value.bin.cb,(LPENTRYID)props[0].Value.bin.lpb, NULL, m_ulMDBFlags, &dwObjType,(LPUNKNOWN*)&pFolder);
+	if (FAILED(hRes)) {
+		CStringA msg;
+		msg.Format("OpenEntry failed. Error code: 0x%x", hRes);
+        DBG_LOG(msg);
+	}
 	MAPIFreeBuffer(props);
 	RELEASE(pInbox);
 
@@ -222,7 +233,12 @@ LPMAPIFOLDER CMAPIEx::OpenInbox(BOOL bInternal)
 	LPMAPIFOLDER pFolder;
 
 	if(m_pMsgStore->GetReceiveFolder(NULL,0,&cbEntryID,&pEntryID,NULL)!=S_OK) return NULL;
-	m_pMsgStore->OpenEntry(cbEntryID,pEntryID, NULL, m_ulMDBFlags,&dwObjType,(LPUNKNOWN*)&pFolder);
+	HRESULT hRes = m_pMsgStore->OpenEntry(cbEntryID,pEntryID, NULL, m_ulMDBFlags,&dwObjType,(LPUNKNOWN*)&pFolder);
+	if (FAILED(hRes)) {
+		CStringA msg;
+		msg.Format("OpenEntry failed. Error code: 0x%x", hRes);
+        DBG_LOG(msg);
+	}
 	MAPIFreeBuffer(pEntryID);
 #endif
 
@@ -327,15 +343,26 @@ void CMAPIEx::ReplaceNumber(CString &number) {
 	number.Replace(_T(" "), _T(""));
 }
 
+CString CMAPIEx::GetExchangeValue(LPSPropValue lpDN) {
+	if (lpDN) {
+		#ifdef UNICODE
+		return lpDN->Value.lpszW;
+		#else
+		return lpDN->Value.lpszA;
+		#endif
+	} else {
+		return "";
+	}
+}
 
-HRESULT CMAPIEx::LoadExchangeContacts(CppSQLite3DB *db) {
+HRESULT CMAPIEx::LoadExchangeContacts(CppSQLite3DB *db, CString &error_message) {
 	LPMAPISESSION 	pSession    = m_pSession;
 	LPADRBOOK 	  	m_pAddrBook = NULL;
 
 	ULONG       cbeid    = 0L;
 	LPENTRYID   lpeid    = NULL;
 	HRESULT     hRes     = S_OK;
-	LPSRowSet   pRow;
+	LPSRowSet   pRow = NULL;
 	ULONG       ulObjType;
 	ULONG       cRows    = 0L;
 
@@ -344,12 +371,15 @@ HRESULT CMAPIEx::LoadExchangeContacts(CppSQLite3DB *db) {
 
 	LPSPropValue lpDN = NULL;
 
-	CStringA title, name, middleName, surname, suffix, fullName, company;
-	CStringA query;	
+	CString title, name, middleName, surname, suffix, fullName, company;
+	CString query;	
 	CString strTemp;
 
+	error_message = "";
+
 	if (pSession==NULL) {
-		DBG_LOG("Failed to load Exhcange contacts. MAPI Session is NULL.");		
+		error_message = "Failed to load Exhcange contacts. MAPI Session is NULL.";
+		DBG_LOG("Failed to load Exhcange contacts. MAPI Session is NULL.");
 		return S_FALSE;
 	}
 
@@ -387,8 +417,9 @@ HRESULT CMAPIEx::LoadExchangeContacts(CppSQLite3DB *db) {
 			m_pAddrBook->Release();
 		}
 		CStringA msg;
-		msg.Format("Failed to open address book. Error: %d", GetLastError());
+		msg.Format("Failed to open address book. Error: %X", hRes);
 		DBG_LOG(msg);
+		error_message = msg;
 		return hRes;
 	}
 
@@ -397,214 +428,270 @@ HRESULT CMAPIEx::LoadExchangeContacts(CppSQLite3DB *db) {
 				&lpeid ) ) )
 	{
 		CStringA msg;
-		msg.Format("Failed to find Exchange Global Address List. Error: %d", GetLastError());
+		msg.Format("Failed to find Exchange Global Address List. Error: %X", hRes);
 		DBG_LOG(msg);		
+		if (hRes!=0x80004005) // Email account does not use Exchange Server, so don't set error message in that case
+ 			error_message = msg;			
 		goto Quit;
 	}
 
 	if(FAILED(hRes = m_pAddrBook->OpenEntry((ULONG) cbeid,
 					(LPENTRYID) lpeid,
 					NULL,
-					MAPI_BEST_ACCESS, // | MAPI_NO_CACHE,
+					MAPI_BEST_ACCESS | MAPI_NO_CACHE /*MAPI_CACHE_ONLY*/,
 					&ulObjType,
 					(LPUNKNOWN *)&lpGAL)))
 	{
 		CStringA msg;
-		msg.Format("Failed to open Global Address List. Error: %d", GetLastError());
+		msg.Format("Failed to open Global Address List. Error: %X", hRes);
 		DBG_LOG(msg);
+		error_message = msg;
 		goto Quit;
 	}
 
 	if ( ulObjType != MAPI_ABCONT ) {
+		error_message = "Failed: ulObjType != MAPI_ABCONT.";
 		DBG_LOG("Failed: ulObjType != MAPI_ABCONT.");
 		goto Quit;
 	}
 
 	if (FAILED(hRes = lpGAL->GetContentsTable(0L, &lpContentsTable))) {
 		CStringA msg;
-		msg.Format("Get Contents Table failed. Error: %d", GetLastError());
-		DBG_LOG(msg);		
+		msg.Format("Get Contents Table failed. Error: %X", hRes);
+		DBG_LOG(msg);
+		error_message = msg;
 		goto Quit;
 	}
 
-	if (FAILED(hRes = lpContentsTable->SetColumns((LPSPropTagArray)&sptCols, TBL_BATCH))) {
+
+	if (FAILED(hRes = lpContentsTable->SetColumns((LPSPropTagArray)&sptCols, /*TBL_ASYNC*/ TBL_BATCH))) {
 		CStringA msg;
-		msg.Format("Set Columns failed. Error: %d", GetLastError());
+		msg.Format("Set Columns failed. Error: %X", hRes);
 		DBG_LOG(msg);
+		error_message = msg;
 		goto Quit;
 	}
+
 
 	if ( FAILED ( hRes = lpContentsTable -> GetRowCount ( 0, &cRows ) ) ) {
-		CStringA msg;
-		msg.Format("Get Row Count failed. Error: %d", GetLastError());
-		DBG_LOG(msg);
-		goto Quit;
-	}
+		// for some reason, just the first call to this function will fail after MAPI login (initialization), so try again
+		// Release and Get contents table once more
 
-	if ( FAILED ( hRes = lpContentsTable -> QueryRows ( cRows, 0L, &pRow ))) {        
-		CStringA msg;
-		msg.Format("QueryRows failed. Error: %d", GetLastError());
-		DBG_LOG(msg);
-		goto Quit;
+		if ( lpContentsTable )
+		{
+			lpContentsTable -> Release ( );
+			lpContentsTable = NULL;
+		}
+		
+		if (FAILED(hRes = lpGAL->GetContentsTable(0L, &lpContentsTable))) {
+			CStringA msg;
+			msg.Format("Get Contents Table failed. Error: %X", hRes);
+			DBG_LOG(msg);
+			error_message = msg;
+			goto Quit;
+		}
+
+		if (FAILED(hRes = lpContentsTable->SetColumns((LPSPropTagArray)&sptCols, /*TBL_ASYNC*/ TBL_BATCH))) {
+			CStringA msg;
+			msg.Format("Set Columns failed. Error: %X", hRes);
+			DBG_LOG(msg);
+			error_message = msg;
+			goto Quit;
+		}
+		
+		if ( FAILED ( hRes = lpContentsTable -> GetRowCount ( 0, &cRows ) ) ) {
+			CStringA msg;
+			msg.Format("Get Row Count failed. Error: %X", hRes);			
+			DBG_LOG(msg);
+			error_message = msg;
+			goto Quit;
+		}
 	}
 
 	try {
-		for(int x=0; (x < pRow->cRows) && (x<5) && !m_bStop; x++)
-		{		
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues,
-			PR_DISPLAY_NAME);
-			lpDN != NULL ? fullName = lpDN->Value.lpszA : fullName="";
+		ULONG counter = 0;
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues,
-			PR_GIVEN_NAME);
-			lpDN != NULL ? name = lpDN->Value.lpszA : name="";
+		while (counter<cRows) {
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues,
-			PR_SURNAME);
-			lpDN != NULL ? surname = lpDN->Value.lpszA : surname="";
+			// Query for 25 rows at a time
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues,
-			PR_COMPANY_NAME);
-			lpDN != NULL ? company = lpDN->Value.lpszA : company="";
-
-			name.Replace("'", "''");
-			surname.Replace("'", "''");
-			company.Replace("'", "''");
-			fullName.Replace("'", "''");
-
-			if (name=="" && surname=="") {
-				name = fullName;
-				surname = "";
+			if ( FAILED ( hRes = lpContentsTable -> QueryRows ( 25, 0L, &pRow ))) {
+				CStringA msg;
+				msg.Format("QueryRows failed. Error: %X", hRes);
+				DBG_LOG(msg);
+				error_message = msg;
+				break;
 			}
 
-			query = "INSERT INTO Contacts VALUES ('" + title + "', '" + name + "', '" + middleName + "', '" + surname + "', '" + suffix + "', '" + company + "'";
+			if (pRow->cRows==0) {
+				FreeProws(pRow);
+				break;
+			}
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_ASSISTANT_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-            ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+			counter += pRow->cRows;
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_BUSINESS_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+			for(int x=0; (x < pRow->cRows) && !m_bStop; x++)
+			{		
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues,
+				PR_DISPLAY_NAME);
+				fullName = GetExchangeValue(lpDN);
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_BUSINESS2_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues,
+				PR_GIVEN_NAME);
+				name = GetExchangeValue(lpDN);			
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_BUSINESS_FAX_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues,
+				PR_SURNAME);
+				surname = GetExchangeValue(lpDN);
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_CALLBACK_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues,
+				PR_COMPANY_NAME);
+				company = GetExchangeValue(lpDN);
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_CAR_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				name.Replace(L"'", L"''");
+				surname.Replace(L"'", L"''");
+				company.Replace(L"'", L"''");
+				fullName.Replace(L"'", L"''");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_COMPANY_MAIN_PHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				if (name=="" && surname=="") {
+					name = fullName;
+					surname = "";
+				}
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_HOME_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				query = "INSERT INTO Contacts VALUES ('" + title + "', '" + name + "', '" + middleName + "', '" + surname + "', '" + suffix + "', '" + company + "'";
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_HOME2_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_ASSISTANT_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+	            
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_HOME_FAX_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_BUSINESS_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_ISDN_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_BUSINESS2_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_MOBILE_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_BUSINESS_FAX_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_OTHER_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_CALLBACK_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_PRIMARY_FAX_NUMBER); //PR_OTHER_FAX_PHONE_NUMBER
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");			
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_CAR_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_PAGER_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_COMPANY_MAIN_PHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_PRIMARY_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_HOME_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_RADIO_TELEPHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_HOME2_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_TELEX_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "'");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_HOME_FAX_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			lpDN = PpropFindProp(pRow->aRow[x].lpProps,
-			pRow->aRow[x].cValues, PR_TTYTDD_PHONE_NUMBER);
-			lpDN != NULL ? strTemp = lpDN->Value.lpszA : strTemp="";
-			ReplaceNumber(strTemp);
-			query += (", '" + strTemp + "')");
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_ISDN_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
 
-			db->execDML(query.GetBuffer());		
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_MOBILE_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_OTHER_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_PRIMARY_FAX_NUMBER); //PR_OTHER_FAX_PHONE_NUMBER
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");			
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_PAGER_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_PRIMARY_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_RADIO_TELEPHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_TELEX_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "'");
+
+				lpDN = PpropFindProp(pRow->aRow[x].lpProps,
+				pRow->aRow[x].cValues, PR_TTYTDD_PHONE_NUMBER);
+				strTemp = GetExchangeValue(lpDN);
+				ReplaceNumber(strTemp);
+				query += (", '" + strTemp + "')");
+
+				db->execDML(query.GetBuffer());		
+			}
+
+			if (pRow) {
+				FreeProws(pRow);
+			}			
 		}
 	} catch (CppSQLite3Exception& e) {
-		DBG_LOG(e.errorMessage());		
-	}
+		DBG_LOG(e.errorMessage());
+	}	
 
+	Quit:	
 
-	Quit:
 	if ( NULL != lpGAL)
 	{
 		lpGAL -> Release ( );
@@ -664,7 +751,7 @@ void CMAPIEx::LoadOutlookContacts() {
 				contact.GetPropertyString(name, PR_GIVEN_NAME);
 				contact.GetPropertyString(middleName, PR_MIDDLE_NAME);
 				contact.GetPropertyString(surname, PR_SURNAME);
-				contact.GetPropertyString(company, PR_MIDDLE_NAME);
+				contact.GetPropertyString(company, PR_COMPANY_NAME);
 				contact.GetName(fullName);				
 
 				title.Replace(_T("'"), _T("''"));
@@ -758,11 +845,14 @@ void CMAPIEx::LoadOutlookContacts() {
 
 			if (!m_bStop) {
 				DBG_LOG("------------------ LOAD EXCHANGE CONTACTS BEGIN ------------------");
-                HRESULT hRes = LoadExchangeContacts(&db);
+				CString error_message;
+                HRESULT hRes = LoadExchangeContacts(&db, error_message);
 				if (hRes!=S_OK) {
 					CStringA msg;
 					msg.Format("Failed to load Exchange contacts. Error code: 0x%x", hRes);
                     DBG_LOG(msg);
+					if (error_message!="")
+						MessageBox(NULL, "Failed to load Exchange contacts. " + error_message, APP_NAME, MB_ICONERROR);
 				}
 				DBG_LOG("------------------ LOAD EXCHANGE CONTACTS END ------------------");
 			}
@@ -828,97 +918,25 @@ HRESULT CMAPIEx::LoadProfileDetails(vector<CString> &vProfiles/*, int &nDefault,
 	HRESULT       hr;
 	
 	vProfiles.clear();
+	vProfiles.push_back("Default");
 
-	hr = MAPIInitialize(NULL);
-	if (FAILED(hr)) {
-		DBG_LOG("Failed to initialize MAPI.");
-		return hr;
-	}
+	//hr = MAPIInitialize(NULL);
+	//if (FAILED(hr)) {
+	//	DBG_LOG("Failed to initialize MAPI.");
+	//	return hr;
+	//}
 
-//#ifdef _UNICODE
-	IMAPISession* pSession;	
-    hr = MAPILogonEx(NULL, NULL, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION | MAPI_USE_DEFAULT ,&pSession);
-	if (hr==S_OK) {
-		CString ProfileName = GetProfileName(pSession);
-		vProfiles.push_back(ProfileName);
-		RELEASE(pSession);
-	} else {
-        DBG_LOG("MAPILogonEx Failed.");		
-	}	
+	//IMAPISession* pSession;	
+ //   hr = MAPILogonEx(NULL, NULL, NULL, MAPI_EXTENDED | MAPI_NEW_SESSION | MAPI_USE_DEFAULT ,&pSession);
+	//if (hr==S_OK) {
+	//	CString ProfileName = GetProfileName(pSession);
+	//	vProfiles.push_back(ProfileName);
+	//	RELEASE(pSession);
+	//} else {
+ //       DBG_LOG("MAPILogonEx Failed.");		
+	//}	
 
-	MAPIUninitialize();	
-
-//#endif
-//	
-//	LPMAPITABLE   pTable = NULL;
-//	LPSRowSet     pRows = NULL;
-//	bool          found=false;
-//	SizedSPropTagArray(2, Columns) = {2, {PR_DISPLAY_NAME, PR_DEFAULT_PROFILE}};
-//	LPPROFADMIN pProfAdmin = NULL; // Pointer to IProfAdmin object
-//	LPSPropValue lpDN = NULL;
-//
-//	/*if (true)
-//		return S_OK;*/
-//
-//	nDefault=-1;
-//
-//	if (bInitializeMAPI) {
-//    	hr = MAPIInitialize(NULL);
-//		if (FAILED(hr)) {
-//			return hr;
-//		}
-//	}
-//
-//	CString ProfileName;
-//
-//	vProfiles.clear();
-//
-//	hr = MAPIAdminProfiles(0, &pProfAdmin); 
-//    if (!FAILED(hr)) 
-//    { 
-//          // Get the ProfileTable - Contains all profiles 
-//          hr = pProfAdmin->GetProfileTable(0, &pTable); 
-//          if (FAILED(hr)) 
-//		  {
-//			   //Error initializing profile table
-//			   return hr;
-//          } 
-//	}
-//
-//	hr = HrQueryAllRows(pTable,      //pointer to table of pointers
-//		 (LPSPropTagArray) &Columns, //list of columns we will get
-//		 NULL,                       //filter NULL. We need all rows
-//		 NULL,                       //we don’t need any sorting here
-//		 0,                          //retrieve all rows that match
-//		 &pRows);                    //pointer to resulting table
-//
-//
-//	if (!FAILED(hr) && pRows->cRows>0) //result of HrQueryAllRows
-//	{
-//		for(int i=0;i<pRows->cRows;i++)
-//		{			
-//			ProfileName = pRows->aRow[i].lpProps->Value.lpszA;			
-//
-//			lpDN = PpropFindProp(pRows->aRow[i].lpProps,
-//			pRows->aRow[i].cValues, PR_DEFAULT_PROFILE);
-//			if (lpDN!=NULL) {
-//				if (lpDN->Value.b!=0) {
-//					nDefault = i;                    
-//				}               
-//			}
-//			vProfiles.push_back(ProfileName);
-//		}
-//	} 
-//
-//	//Cleanup
-//	if (pRows) FreeProws(pRows);
-//	if (pTable) pTable->Release();
-//	if (pProfAdmin) pProfAdmin->Release();
-//
-//	if (bInitializeMAPI) {
-//		MAPIUninitialize();
-//	}
-//#endif
+	//MAPIUninitialize();
 
 	return S_OK;
 }

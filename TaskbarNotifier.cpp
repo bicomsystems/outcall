@@ -532,7 +532,11 @@ BOOL CTaskbarNotifier::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	return CWnd::OnSetCursor(pWnd, nHitTest, message);
 }
 
+#ifdef _WIN64
+void CTaskbarNotifier::OnTimer(UINT_PTR nIDEvent)
+#else
 void CTaskbarNotifier::OnTimer(UINT nIDEvent)
+#endif
 {
 	switch (nIDEvent)
 	{

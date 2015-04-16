@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -117,8 +117,11 @@ void CSettingsExtensionsDlg::LoadSettings() {
 	DWORD Size;
 	DWORD dwNo = 0;
 
-
+#ifdef MULTI_TENANT
+	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS && i<1; i++) 
+#else
 	for (int i = 0, retCode = ERROR_SUCCESS; retCode == ERROR_SUCCESS; i++) 
+#endif
     {
 		Size = MAX_REG_KEY_NAME;
 		DWORD dwNo = 100;

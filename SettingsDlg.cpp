@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007, Bicom Systems Ltd.
+ * Copyright (c) 2003-2010, Bicom Systems Ltd.
  *
  * All rights reserved.
  *
@@ -38,6 +38,7 @@
 #include "PBXClient.h"
 #include "SettingsDlg.h"
 #include "MainFrm.h"
+#include "MAPIEx.h"
 
 #include <atlbase.h>
 
@@ -120,14 +121,21 @@ BOOL CSettingsDlg::OnInitDialog()
 
 	m_dlgGeneral.ShowWindow(1);
 	
+#ifdef MULTI_TENANT
+	m_tab.InsertItem(0, _("General"));
+	m_tab.InsertItem(1, _("Dialing rules"));
+	m_tab.InsertItem(2, _("Server"));
+	m_tab.InsertItem(3, _("Outlook"));
+	m_tab.InsertItem(4, _("Outlook Import Rules"));
+#else
 	m_tab.InsertItem(0, _("General"));
 	m_tab.InsertItem(1, _("Dialing rules"));
 	m_tab.InsertItem(2, _("Server"));
 	m_tab.InsertItem(3, _("Extensions"));
 	m_tab.InsertItem(4, _("Outlook"));
 	m_tab.InsertItem(5, _("Outlook Import Rules"));
-
-
+#endif
+	
 	m_dlgGeneral.LoadSettings();
 	m_dlgServer.LoadSettings();
 	m_dlgExtensions.LoadSettings();
@@ -147,8 +155,11 @@ BOOL CSettingsDlg::OnInitDialog()
 	SetWindowPos(&this->wndNoTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 
 	InitLocaleGUI();
+
+	m_tab.SetCurSel(0);
+	m_tab.SetFocus();
 	
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE; //TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
@@ -214,6 +225,7 @@ void CSettingsDlg::UpdateRegistryExtensions() {
 	
 	delete[] data;
 
+#ifndef MULTI_TENANT
 	CString extension, szProtocol;
 	CListCtrl &m_list = m_dlgExtensions.m_list;
 	int protocol;
@@ -228,6 +240,7 @@ void CSettingsDlg::UpdateRegistryExtensions() {
 			protocol=2;
 		AfxGetApp()->WriteProfileInt(_T("Extensions"), extension, protocol);
 	}
+#endif
 }
 
 void CSettingsDlg::OnCancel()
@@ -277,7 +290,11 @@ void CSettingsDlg::SaveSettings() {
 		pApp->WriteProfileString("Settings", "port", value);
 
 		m_dlgServer.GetDlgItemText(IDC_EDIT_USERNAME, value);
+#ifdef MULTI_TENANT
+		if (value=="" || value.GetLength()<=3) {
+#else
 		if (value=="") {
+#endif
 			MessageBox(_("Invalid username!"), APP_NAME, MB_OK | MB_ICONEXCLAMATION);
 			m_tab.SetCurSel(2);
 			OnTabSelectionChanged();
@@ -285,6 +302,10 @@ void CSettingsDlg::SaveSettings() {
 			return;
 		}
 		pApp->WriteProfileString("Settings", "username", value);
+
+#ifdef MULTI_TENANT
+		pApp->WriteProfileInt("Settings", "protocol", m_dlgServer.m_protocol.GetCurSel());
+#endif
 
 		m_dlgServer.GetDlgItemText(IDC_EDIT_PASSWORD, value);
 		pApp->WriteProfileString("Settings", "password", ::theApp.EncodePassword(value));
@@ -297,8 +318,11 @@ void CSettingsDlg::SaveSettings() {
 		/*********************		EXTENSIONS		***********************/
 
 		UpdateRegistryExtensions();
-
-		
+#ifdef MULTI_TENANT
+		m_dlgServer.GetDlgItemText(IDC_EDIT_USERNAME, value);
+		AfxGetApp()->WriteProfileInt(_T("Extensions"), value.Mid(value.Find(_T("/"))+4, value.GetLength())+_T("#####"), 
+			m_dlgServer.m_protocol.GetCurSel());
+#endif		
 
 		/*********************		GENERAL SETTINGS		***********************/
 
@@ -419,7 +443,18 @@ void CSettingsDlg::SaveSettings() {
 		}
 
 		m_dlgOutlook.m_cboMailProfile.GetWindowText(value);
+		value = value.Trim();
+		if (value=="Default" || value=="default")
+			value = "";
+
+		//bool bMAPILoginRequired = (pApp->GetProfileString("Settings", "MailProfile", "")!=value);
+				
 		pApp->WriteProfileString("Settings", "MailProfile", value);
+
+		//if (bMAPILoginRequired) { // reinitialize MAPI session
+		//	gMapiEx.Logout();
+		//	gMapiEx.Login();
+		//}
 
 		pApp->WriteProfileInt("Settings", "NNCallerID", m_dlgOutlook.m_chkNNCallerID.GetCheck()?1:0);
 		pApp->WriteProfileInt("Settings", "FilterContacts", m_dlgOutlook.m_chkFilterContacts.GetCheck()?1:0);
@@ -508,12 +543,20 @@ void CSettingsDlg::OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult)
 void CSettingsDlg::OnTabSelectionChanged() {
     int nTab = m_tab.GetCurSel();
 
+#ifdef MULTI_TENANT
+	m_dlgGeneral.ShowWindow(nTab==0);
+	m_dlgDR.ShowWindow(nTab==1);
+	m_dlgServer.ShowWindow(nTab==2);
+	m_dlgOutlook.ShowWindow(nTab==3);
+	m_dlgImportRules.ShowWindow(nTab==4);
+#else
 	m_dlgGeneral.ShowWindow(nTab==0);
 	m_dlgDR.ShowWindow(nTab==1);
 	m_dlgServer.ShowWindow(nTab==2);
 	m_dlgExtensions.ShowWindow(nTab==3);
 	m_dlgOutlook.ShowWindow(nTab==4);
 	m_dlgImportRules.ShowWindow(nTab==5);
+#endif
 }
 
 
@@ -535,8 +578,7 @@ void CSettingsDlg::InitLocaleGUI() {
 	TCITEM tcItem;
 	tcItem.iImage=-1;
 	tcItem.lParam=NULL;
-	/*tcItem.dwState=NULL;
-	tcItem.dwStateMask=NULL;*/	
+	tcItem.mask = TCIF_TEXT;	
 	for (int i=0; i<m_tab.GetItemCount(); i++) {
 		if (i==0)
 			tabText = _("General");
