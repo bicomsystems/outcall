@@ -56,3 +56,14 @@ C:\Program Files\Microsoft Office\Office\MSOUTL9.OLB
 Outlook 2003:
 C:\Program Files\Common Files\Microsoft Shared\Office11\mso.dll
 C:\Program Files\Microsoft Office\Office11\MSOUTL.OLB
+
+## Additional links ##
+
+[Documentation](http://www.bicomsystems.com/docs/outcall/1.0/html/)
+[Screen shots](http://outcall.sourceforge.net/screenshots.html)
+
+## LICENSE ##
+
+[BSD](http://opensource.org/licenses/BSD-3-Clause)
+
+
