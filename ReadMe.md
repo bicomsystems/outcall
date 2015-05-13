@@ -1,5 +1,7 @@
 ## What is OutCALL? ##
 
+**Note: This project has been replaced with [OutCALL 2.0](https://github.com/bicomsystems/outcall2)**
+
 This page was originally written about the OutCALL application. But as [Bicom Systems](http://www.bicomsystems.com) has advanced and taken steps forward, OutCALL has been replaced by [gloCOM](http://marketing.bicomsystems.com/files/marketing/gloCOM.pdf).
 For details, watch the following video http://www.youtube.com/watch?v=naL7EuwNKaw, or check out  [gloCOM](http://marketing.bicomsystems.com/files/marketing/gloCOM.pdf) features.
 
@@ -25,8 +27,6 @@ the [Business PBX](http://www.bicomsystems.com/products/business-pbx),
 For more information, see the [Bicom Systems](http://www.bicomsystems.com) website or browse through our [Products](http://www.bicomsystems.com/products).
 
 After over 12,000 downloads on Source Forge, OutCALL has been moved to Google Code.
-
-**Note: [Bicom Systems](http://www.bicomsystems.com) only gives support for [OutCALL 2.0](http://www.bicomsystems.com/products/outcall) and above - as such it does not work with vanilla Asterisk.**
 
 ## OutCALL features are: ##
 
@@ -66,4 +66,6 @@ C:\Program Files\Microsoft Office\Office11\MSOUTL.OLB
 
 [BSD](http://opensource.org/licenses/BSD-3-Clause)
 
+## Binaries ##
 
+Head over to the [releases](https://github.com/bicomsystems/outcall/releases) page for the latest binaries.
